@@ -10,7 +10,7 @@ namespace NeoSharp.Core.Messaging.Messages
         #region Variables 
 
         UInt256 _hash;
-        readonly ICrypto _crypto;
+        readonly Crypto _crypto;
         readonly IBinarySerializer _serializer;
 
         #endregion
@@ -45,7 +45,7 @@ namespace NeoSharp.Core.Messaging.Messages
         /// </summary>
         /// <param name="serializer">Serializer</param>
         /// <param name="crypto">Crypto</param>
-        public ConsensusMessage(IBinarySerializer serializer, ICrypto crypto)
+        public ConsensusMessage(IBinarySerializer serializer, Crypto crypto)
         {
             _crypto = crypto;
             _serializer = serializer;

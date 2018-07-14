@@ -13,8 +13,8 @@ namespace NeoSharp.Core.Test.Cryptography
     [TestClass]
     public class UtCrypto : TestBase
     {
-        ICrypto _bccrypto;
-        ICrypto _nativecrypto;
+        Crypto _bccrypto;
+        Crypto _nativecrypto;
         byte[] _data;
 
         [TestInitialize]
@@ -265,7 +265,7 @@ namespace NeoSharp.Core.Test.Cryptography
         public void Base58_Encode_Decode()
         {
             // Arrange
-            var test = RandomString(_rand.Next(1, 30));
+            var test = RandomString(Rand.Next(1, 30));
 
             // Act
             var encodig = _bccrypto.Base58Encode(Encoding.ASCII.GetBytes(test));
@@ -329,7 +329,7 @@ namespace NeoSharp.Core.Test.Cryptography
         public void Base58Check_Encode_Decode()
         {
             // Arrange
-            var test = RandomString(_rand.Next(5, 30));
+            var test = RandomString(Rand.Next(5, 30));
 
             // Act
             var encodig = _bccrypto.Base58CheckEncode(Encoding.ASCII.GetBytes(test));

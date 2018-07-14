@@ -32,7 +32,7 @@ namespace NeoSharp.Core.Models
         /// </summary>
         /// <param name="serializer">Serializer</param>
         /// <param name="crypto">Crypto</param>
-        public override void UpdateHash(IBinarySerializer serializer, ICrypto crypto)
+        public override void UpdateHash(IBinarySerializer serializer, Crypto crypto)
         {
             // Compute tx hashes
 

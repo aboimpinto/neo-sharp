@@ -10,7 +10,7 @@ namespace NeoSharp.Core.Extensions
     {
         // TODO: How to inject this?
 
-        private static ICrypto _crypto = new BouncyCastleCrypto();
+        private static Crypto _crypto = new BouncyCastleCrypto();
 
         /// <summary>
         /// Generate Script Hash

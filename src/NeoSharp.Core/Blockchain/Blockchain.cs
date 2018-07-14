@@ -19,7 +19,7 @@ namespace NeoSharp.Core.Blockchain
 
         private readonly IRepository _repository;
         private readonly IBinarySerializer _serializer;
-        private readonly ICrypto _crypto;
+        private readonly Crypto _crypto;
         private CancellationTokenSource _cancelPersistTask;
         private int _initialized;
 
@@ -49,7 +49,7 @@ namespace NeoSharp.Core.Blockchain
         /// <param name="repository">Repository</param>
         /// <param name="serializer">Serializer</param>
         /// <param name="crypto">Crypto</param>
-        public Blockchain(IRepository repository, IBinarySerializer serializer, ICrypto crypto)
+        public Blockchain(IRepository repository, IBinarySerializer serializer, Crypto crypto)
         {
             _repository = repository;
             _serializer = serializer;

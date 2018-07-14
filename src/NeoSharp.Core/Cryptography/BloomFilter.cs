@@ -8,7 +8,7 @@ namespace NeoSharp.Core.Cryptography
     {
         private readonly uint[] _seeds;
         private readonly BitArray _bits;
-        private readonly ICrypto _crypto;
+        private readonly Crypto _crypto;
 
         public int K => _seeds.Length;
         public int M => _bits.Length;
@@ -22,7 +22,7 @@ namespace NeoSharp.Core.Cryptography
         /// <param name="k">Hash iterations</param>
         /// <param name="nTweak">Seed</param>
         /// <param name="elements">Initial elements</param>
-        public BloomFilter(ICrypto crypto, int m, int k, uint nTweak, byte[] elements = null)
+        public BloomFilter(Crypto crypto, int m, int k, uint nTweak, byte[] elements = null)
         {
             _crypto = crypto ?? throw new ArgumentNullException(nameof(crypto));
             _seeds = Enumerable.Range(0, k).Select(p => (uint)p * 0xFBA4C795 + nTweak).ToArray();

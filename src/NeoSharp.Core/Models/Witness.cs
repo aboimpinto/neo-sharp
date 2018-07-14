@@ -85,7 +85,7 @@ namespace NeoSharp.Core.Models
         /// </summary>
         /// <param name="serializer">Serializer</param>
         /// <param name="crypto">Crypto</param>
-        public void UpdateHash(IBinarySerializer serializer, ICrypto crypto)
+        public void UpdateHash(IBinarySerializer serializer, Crypto crypto)
         {
             _hash = new UInt160(crypto.Hash160(GetHashData(serializer)));
         }

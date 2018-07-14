@@ -6,20 +6,20 @@ using NeoSharp.Core.Extensions;
 
 namespace NeoSharp.Core.Cryptography
 {
-    public abstract class ICrypto
+    public abstract class Crypto
     {
         // TODO: When we solve the injection problem we can remove this
 
-        public static readonly ICrypto Default = new BouncyCastleCrypto();
+        public static readonly Crypto Default = new BouncyCastleCrypto();
 
         /// <summary>
         /// base58 Alphabet
         /// </summary>
-        private const string _alphabet58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        private const string Alphabet58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         /// <summary>
         /// Base
         /// </summary>
-        private static readonly BigInteger _base58 = new BigInteger(58);
+        private static readonly BigInteger Base58 = new BigInteger(58);
 
         /// <summary>
         /// Sha256 digests
@@ -212,16 +212,16 @@ namespace NeoSharp.Core.Cryptography
             BigInteger bi = BigInteger.Zero;
             for (int i = input.Length - 1; i >= 0; i--)
             {
-                int index = _alphabet58.IndexOf(input[i]);
+                int index = Alphabet58.IndexOf(input[i]);
                 if (index == -1)
                     throw new FormatException();
-                bi += index * BigInteger.Pow(_base58, input.Length - 1 - i);
+                bi += index * BigInteger.Pow(Base58, input.Length - 1 - i);
             }
             byte[] bytes = bi.ToByteArray();
             Array.Reverse(bytes);
             bool stripSignByte = bytes.Length > 1 && bytes[0] == 0 && bytes[1] >= 0x80;
             int leadingZeros = 0;
-            for (int i = 0; i < input.Length && input[i] == _alphabet58[0]; i++)
+            for (int i = 0; i < input.Length && input[i] == Alphabet58[0]; i++)
             {
                 leadingZeros++;
             }
@@ -239,17 +239,17 @@ namespace NeoSharp.Core.Cryptography
         {
             BigInteger value = new BigInteger(new byte[1].Concat(input).Reverse().ToArray());
             StringBuilder sb = new StringBuilder();
-            while (value >= _base58)
+            while (value >= Base58)
             {
-                BigInteger mod = value % _base58;
-                sb.Insert(0, _alphabet58[(int)mod]);
-                value /= _base58;
+                BigInteger mod = value % Base58;
+                sb.Insert(0, Alphabet58[(int)mod]);
+                value /= Base58;
             }
-            sb.Insert(0, _alphabet58[(int)value]);
+            sb.Insert(0, Alphabet58[(int)value]);
             foreach (byte b in input)
             {
                 if (b == 0)
-                    sb.Insert(0, _alphabet58[0]);
+                    sb.Insert(0, Alphabet58[0]);
                 else
                     break;
             }

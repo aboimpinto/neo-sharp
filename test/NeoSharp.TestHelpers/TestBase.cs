@@ -8,7 +8,7 @@ namespace NeoSharp.TestHelpers
     public abstract class TestBase
     {
         private readonly MockRepository _mockRepository;
-        protected readonly Random _rand;
+        protected readonly Random Rand;
 
         public IAutoMockContainer AutoMockContainer { get; private set; }
 
@@ -17,7 +17,7 @@ namespace NeoSharp.TestHelpers
         /// </summary>
         protected TestBase()
         {
-            _rand = new Random(Environment.TickCount);
+            Rand = new Random(Environment.TickCount);
             _mockRepository = new MockRepository(MockBehavior.Loose);
             AutoMockContainer = new UnityAutoMockContainer(_mockRepository);
         }
@@ -33,7 +33,7 @@ namespace NeoSharp.TestHelpers
 
             // TODO: Very slow method, for 65K iteration with long text string
 
-            return new string(Enumerable.Repeat(chars, length).Select(s => s[_rand.Next(s.Length)]).ToArray());
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[Rand.Next(s.Length)]).ToArray());
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace NeoSharp.TestHelpers
         /// <returns>A positive integer</returns>
         public int RandomInt()
         {
-            return _rand.Next();
+            return Rand.Next();
         }
         /// <summary>
         /// Generate a random integer with a max value
@@ -51,7 +51,7 @@ namespace NeoSharp.TestHelpers
         /// <returns>A positive integer that is smaller than max</returns>
         public int RandomInt(int max = int.MaxValue)
         {
-            return _rand.Next(max);
+            return Rand.Next(max);
         }
 
         /// <summary>

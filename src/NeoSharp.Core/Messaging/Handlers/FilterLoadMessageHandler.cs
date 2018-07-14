@@ -11,7 +11,7 @@ namespace NeoSharp.Core.Messaging.Handlers
     {
         #region Variables
 
-        private readonly ICrypto _crypto;
+        private readonly Crypto _crypto;
         private readonly ILogger<FilterLoadMessageHandler> _logger;
 
         #endregion
@@ -21,7 +21,7 @@ namespace NeoSharp.Core.Messaging.Handlers
         /// </summary>
         /// <param name="crypto">Crypto</param>
         /// <param name="logger">Logger</param>
-        public FilterLoadMessageHandler(ICrypto crypto, ILogger<FilterLoadMessageHandler> logger)
+        public FilterLoadMessageHandler(Crypto crypto, ILogger<FilterLoadMessageHandler> logger)
         {
             _crypto = crypto ?? throw new ArgumentNullException(nameof(crypto));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
