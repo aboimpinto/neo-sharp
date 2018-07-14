@@ -8,18 +8,45 @@ namespace NeoSharp.Application.Client
 {
     public partial class Prompt : IPrompt
     {
+        void WriteStatePercent(string title, string msg, long value, long max)
+        {
+            _consoleWriter.Write(title + ": " + msg + " ");
+
+            using (var pg = _consoleWriter.CreatePercent(max))
+            {
+                pg.Value = value;
+            }
+        }
+
         /// <summary>
         /// Show state
         /// </summary>
         [PromptCommand("state", Category = "Blockchain", Help = "Show current state")]
         private void StateCommand()
         {
-            _consoleWriter.WriteLine("Memory pool:");
+            var memStr = _blockchain.MemoryPool.Count.ToString("###,###,###,###,##0");
+            var blockStr = _blockchain.BlockPool.Count.ToString("###,###,###,###,##0");
 
-            using (var pg = _consoleWriter.CreatePercent(_blockchain.MemoryPool.Max))
-            {
-                pg.Value = _blockchain.MemoryPool.Count;
-            }
+            var headStr = _blockchain.LastBlockHeader.Index.ToString("###,###,###,###,##0");
+            var blStr = _blockchain.CurrentBlock.Index.ToString("###,###,###,###,##0");
+            var blIndex = 0.ToString("###,###,###,###,##0"); // TODO: Change me
+
+            var numSpaces = new int[] { memStr.Length, blockStr.Length, blIndex.Length, headStr.Length, blStr.Length }.Max() + 1;
+
+            _consoleWriter.WriteLine("Pools", ConsoleOutputStyle.Information);
+            _consoleWriter.WriteLine("");
+
+            WriteStatePercent(" Memory", memStr.PadLeft(numSpaces, ' '), _blockchain.MemoryPool.Count, _blockchain.MemoryPool.Max);
+            WriteStatePercent(" Blocks", blockStr.PadLeft(numSpaces, ' '), _blockchain.BlockPool.Count, _blockchain.BlockPool.Max);
+
+            _consoleWriter.WriteLine("");
+            _consoleWriter.WriteLine("Heights", ConsoleOutputStyle.Information);
+            _consoleWriter.WriteLine("");
+
+            _consoleWriter.WriteLine("Headers: " + headStr.PadLeft(numSpaces, ' ') + " ");
+
+            WriteStatePercent(" Blocks", blStr.PadLeft(numSpaces, ' '), _blockchain.CurrentBlock.Index, _blockchain.LastBlockHeader.Index);
+            WriteStatePercent("  Index", blIndex.PadLeft(numSpaces, ' '), 0, _blockchain.CurrentBlock.Index);
         }
 
         /// <summary>
@@ -121,7 +148,7 @@ namespace NeoSharp.Application.Client
         /// <param name="hash">Hash</param>
         /// <param name="output">Output</param>
         [PromptCommand("contract", Category = "Blockchain", Help = "Get asset", Order = 0)]
-        private void ContractCommand(UInt256 hash, PromptOutputStyle output = PromptOutputStyle.json)
+        private void ContractCommand(UInt160 hash, PromptOutputStyle output = PromptOutputStyle.json)
         {
             _consoleWriter.WriteObject(_blockchain?.GetContract(hash), output);
         }

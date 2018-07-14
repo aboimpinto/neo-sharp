@@ -9,14 +9,14 @@ using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Messaging.Messages;
 using NeoSharp.Core.Models;
-using NeoSharp.Core.Network;
 using NeoSharp.Core.Test.Types;
 using NeoSharp.Core.Types;
+using NeoSharp.TestHelpers;
 
 namespace NeoSharp.Core.Test.Serializers
 {
     [TestClass]
-    public class UtBinarySerializer
+    public class UtBinarySerializer : TestBase
     {
         private ICrypto _crypto;
         private IBinarySerializer _serializer;
@@ -26,8 +26,41 @@ namespace NeoSharp.Core.Test.Serializers
         public void WarmUpSerializer()
         {
             _crypto = new BouncyCastleCrypto();
+
+            BinarySerializer.RegisterTypes(typeof(SetTest));
             _serializer = new BinarySerializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly);
             _deserializer = new BinaryDeserializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly);
+        }
+
+        public class SetTest
+        {
+            [BinaryProperty(0)]
+            public HashSet<int> Set = new HashSet<int>();
+
+            [BinaryProperty(1)]
+            public Dictionary<int, string> Dictionary = new Dictionary<int, string>();
+        }
+
+        [TestMethod]
+        public void Serialize_Sets()
+        {
+            var set = new SetTest();
+
+            for (int x = 0, m = RandomInt(byte.MaxValue) * 2; x < m; x++)
+            {
+                set.Set.Add(RandomInt());
+                set.Dictionary.Add(RandomInt(), RandomString(RandomInt(ushort.MaxValue)));
+            }
+
+            var ret = _serializer.Serialize(set);
+            var clone = _deserializer.Deserialize<SetTest>(ret);
+
+            Assert.AreEqual(set.Set.Count, clone.Set.Count);
+            Assert.AreEqual(set.Dictionary.Count, clone.Dictionary.Count);
+
+            CollectionAssert.AreEqual(set.Set.ToArray(), clone.Set.ToArray());
+            CollectionAssert.AreEqual(set.Dictionary.Keys.ToArray(), clone.Dictionary.Keys.ToArray());
+            CollectionAssert.AreEqual(set.Dictionary.Values.ToArray(), clone.Dictionary.Values.ToArray());
         }
 
         [TestMethod]
@@ -319,7 +352,7 @@ namespace NeoSharp.Core.Test.Serializers
                 PreviousBlockHash = UInt256.Zero,
                 Timestamp = 3,
                 Version = 4,
-                Script = new Witness
+                Witness = new Witness
                 {
                     InvocationScript = new byte[0],
                     VerificationScript = new byte[0],
@@ -329,7 +362,7 @@ namespace NeoSharp.Core.Test.Serializers
                     Attributes=new TransactionAttribute[]{ },
                     Inputs=new CoinReference[]{ },
                     Outputs=new TransactionOutput[]{},
-                    Scripts=new Witness[]{ },
+                    Witness=new Witness[]{ },
                     Script=new byte[]{ 0x01 },
                     Version=0
                     }
@@ -351,8 +384,8 @@ namespace NeoSharp.Core.Test.Serializers
             Assert.AreEqual(blockHeader.Timestamp, blockHeaderCopy.Timestamp);
             Assert.AreEqual(blockHeader.Version, blockHeaderCopy.Version);
 
-            Assert.IsTrue(blockHeader.Script.InvocationScript.SequenceEqual(blockHeaderCopy.Script.InvocationScript));
-            Assert.IsTrue(blockHeader.Script.VerificationScript.SequenceEqual(blockHeaderCopy.Script.VerificationScript));
+            Assert.IsTrue(blockHeader.Witness.InvocationScript.SequenceEqual(blockHeaderCopy.Witness.InvocationScript));
+            Assert.IsTrue(blockHeader.Witness.VerificationScript.SequenceEqual(blockHeaderCopy.Witness.VerificationScript));
         }
     }
 }

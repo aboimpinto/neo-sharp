@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +22,7 @@ namespace NeoSharp.Core.Test.Network
         [TestInitialize]
         public void Initialize()
         {
-            var networkConfig = GetNetworkConfig("tcp://localhost:8081");
+            var networkConfig = GetNetworkConfig();
             _peerEndPoint = networkConfig.PeerEndPoints[0];
 
             AutoMockContainer.Register(networkConfig);
@@ -153,35 +153,7 @@ namespace NeoSharp.Core.Test.Network
         }
 
         [TestMethod]
-        public async Task SendBroadcast_FilterIsNull_MessageSendToConnectedPeers()
-        {
-            // Arrange
-            var peerMock = AutoMockContainer.GetMock<IPeer>();
-
-            peerMock
-                .SetupGet(x => x.EndPoint)
-                .Returns(_peerEndPoint);
-
-            var peerFactoryMock = AutoMockContainer.GetMock<IPeerFactory>();
-
-            peerFactoryMock
-                .Setup(x => x.ConnectTo(_peerEndPoint))
-                .Returns(Task.FromResult(peerMock.Object));
-
-            var server = AutoMockContainer.Create<Server>();
-            var message = new Message();
-
-            // Act
-            server.Start();
-
-            await server.SendBroadcast(message);
-
-            // Assert
-            peerMock.Verify(x => x.Send(message), Times.AtLeastOnce);
-        }
-
-        [TestMethod]
-        public async Task SendBroadcast_FilterEqualFalse_MessageNotSendToBroadcaster()
+        public void Broadcast_PeerIsTheSameAsSource_MessageNotSendToPeer()
         {
             // Arrange
             var peerMock = AutoMockContainer.GetMock<IPeer>();
@@ -202,14 +174,14 @@ namespace NeoSharp.Core.Test.Network
             // Act
             server.Start();
 
-            await server.SendBroadcast(message, peer => false);
+            server.Broadcast(message, peerMock.Object);
 
             // Assert
             peerMock.Verify(x => x.Send(message), Times.Never);
         }
 
         [TestMethod]
-        public async Task SendBroadcast_FilterEqualTrue_MessageSendToPeer()
+        public void SendBroadcast_PeerIsNotTheSameAsSource_MessageSendToPeer()
         {
             // Arrange
             var peerMock = AutoMockContainer.GetMock<IPeer>();
@@ -230,30 +202,21 @@ namespace NeoSharp.Core.Test.Network
             // Act
             server.Start();
 
-            await server.SendBroadcast(message, peer => true);
+            server.Broadcast(message, null);
 
             // Assert
             peerMock.Verify(x => x.Send(message), Times.Once);
         }
 
-        private static NetworkConfig GetNetworkConfig(params string[] peerEndPoints)
+        private static NetworkConfig GetNetworkConfig()
         {
-            var initialData = new Dictionary<string, string>
-            {
-                { "network:port", "8000" },
-                { "network:forceIPv6", "false" },
-            };
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", false, true);
 
-            for (var i = 0; i < peerEndPoints.Length; i++)
-            {
-                initialData.Add($"network:peerEndPoints:{i}", peerEndPoints[i]);
-            }
+            var configuration = builder.Build();
 
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(initialData)
-                .Build();
-
-            return new NetworkConfig(config);
+            return new NetworkConfig(configuration);
         }
     }
 }

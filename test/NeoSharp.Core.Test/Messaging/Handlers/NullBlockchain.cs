@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using NeoSharp.Core.Blockchain;
 using NeoSharp.Core.Caching;
+using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Types;
 
@@ -13,26 +13,33 @@ namespace NeoSharp.Core.Test.Messaging.Handlers
     {
         public Block CurrentBlock { get; } = new Block();
 
-        public BlockHeaderBase LastBlockHeader => CurrentBlock;
+        public BlockHeader LastBlockHeader => CurrentBlock.GetBlockHeader();
 
         public StampedPool<UInt256, Transaction> MemoryPool => new StampedPool<UInt256, Transaction>(PoolMaxBehaviour.DontAllowMore, 0, x => x.Value.Hash, null);
+
+        public Pool<uint, Block> BlockPool => new Pool<uint, Block>(PoolMaxBehaviour.RemoveFromEnd, 0, x => x.Index, null);
 
         public Task InitializeBlockchain()
         {
             throw new NotImplementedException();
         }
 
-        public bool AddBlock(Block block)
+        public Task<bool> AddBlock(Block block)
         {
             throw new NotImplementedException();
         }
 
-        public bool ContainsBlock(UInt256 hash)
+        public Task<bool> ContainsBlock(UInt256 hash)
         {
             throw new NotImplementedException();
         }
 
-        public bool ContainsTransaction(UInt256 hash)
+        public Task<bool> AddTransaction(Transaction transaction)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ContainsTransaction(UInt256 hash)
         {
             throw new NotImplementedException();
         }
@@ -62,7 +69,7 @@ namespace NeoSharp.Core.Test.Messaging.Handlers
             throw new NotImplementedException();
         }
 
-        public Contract GetContract(UInt256 hash)
+        public Contract GetContract(UInt160 hash)
         {
             throw new NotImplementedException();
         }
@@ -162,7 +169,7 @@ namespace NeoSharp.Core.Test.Messaging.Handlers
             throw new NotImplementedException();
         }
 
-        public void AddBlockHeaders(IEnumerable<BlockHeaderBase> blockHeaders)
+        public Task AddBlockHeaders(IEnumerable<BlockHeader> blockHeaders)
         {
             throw new NotImplementedException();
         }
