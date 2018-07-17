@@ -38,7 +38,7 @@ namespace NeoSharp.Core.Messaging.Handlers
 
             // TODO: check if the hash of the transaction is known already
 
-            transaction.UpdateHash(BinarySerializer.Default, ICrypto.Default);
+            transaction.UpdateHash(BinarySerializer.Default, Crypto.Default);
 
             var transactionExists = await _blockchain.ContainsTransaction(transaction.Hash);
             if (transactionExists)
