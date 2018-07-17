@@ -8,7 +8,7 @@ namespace NeoSharp.Core.Test.Cryptography
     [TestClass]
     public class UtBloomFilter : TestBase
     {
-        ICrypto _crypto;
+        Crypto _crypto;
 
         [TestInitialize]
         public void Init()

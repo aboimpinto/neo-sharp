@@ -35,7 +35,7 @@ namespace NeoSharp.Core.Cryptography
         /// </summary>
         /// <param name="crypto">ICrypto</param>
         /// <param name="hashes">Hash Array</param>
-        private MerkleTree(ICrypto crypto, UInt256[] hashes)
+        private MerkleTree(Crypto crypto, UInt256[] hashes)
         {
             if (hashes.Length == 0) throw new ArgumentException();
 
@@ -53,7 +53,7 @@ namespace NeoSharp.Core.Cryptography
         /// <param name="crypto">ICrypto</param>
         /// <param name="leaves">Leaves nodes</param>
         /// <returns>Node</returns>
-        private static MerkleTreeNode Build(ICrypto crypto, MerkleTreeNode[] leaves)
+        private static MerkleTreeNode Build(Crypto crypto, MerkleTreeNode[] leaves)
         {
             if (leaves.Length == 0) throw new ArgumentException();
             if (leaves.Length == 1) return leaves[0];
@@ -99,7 +99,7 @@ namespace NeoSharp.Core.Cryptography
         /// <param name="crypto">ICrypto</param>
         /// <param name="hashes">Hash list</param>
         /// <returns>Result of the calculation</returns>
-        public static UInt256 ComputeRoot(ICrypto crypto, UInt256[] hashes)
+        public static UInt256 ComputeRoot(Crypto crypto, UInt256[] hashes)
         {
             if (hashes == null || hashes.Length == 0) throw new ArgumentException();
             if (hashes.Length == 1) return hashes[0];
@@ -114,7 +114,7 @@ namespace NeoSharp.Core.Cryptography
         /// <param name="crypto">ICrypto</param>
         /// <param name="hashes">Hash list</param>
         /// <returns>Result of the calculation</returns>
-        public static MerkleTree ComputeTree(ICrypto crypto, UInt256[] hashes)
+        public static MerkleTree ComputeTree(Crypto crypto, UInt256[] hashes)
         {
             if (hashes == null || hashes.Length == 0) throw new ArgumentException();
 

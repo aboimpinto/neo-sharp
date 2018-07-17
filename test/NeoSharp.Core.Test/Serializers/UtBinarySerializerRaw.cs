@@ -12,7 +12,7 @@ namespace NeoSharp.Core.Test.Serializers
     [TestClass]
     public class UtBinarySerializerRaw
     {
-        private ICrypto _crypto;
+        private Crypto _crypto;
         private IBinarySerializer _serializer;
         private IBinaryDeserializer _deserializer;
 

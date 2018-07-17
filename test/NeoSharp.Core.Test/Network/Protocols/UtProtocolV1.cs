@@ -52,13 +52,13 @@ namespace NeoSharp.Core.Test.Network.Protocols
             // Arrange 
             var versionPayload = new VersionPayload
             {
-                Version = (uint) _rand.Next(0, int.MaxValue),
-                Services = (ulong) _rand.Next(0, int.MaxValue),
+                Version = (uint) Rand.Next(0, int.MaxValue),
+                Services = (ulong) Rand.Next(0, int.MaxValue),
                 Timestamp = DateTime.UtcNow.ToTimestamp(),
-                Port = (ushort) _rand.Next(0, short.MaxValue),
-                Nonce = (uint) _rand.Next(0, int.MaxValue),
-                UserAgent = $"/NEO:{_rand.Next(1, 10)}.{_rand.Next(1, 100)}.{_rand.Next(1, 1000)}/",
-                CurrentBlockIndex = (uint) _rand.Next(0, int.MaxValue),
+                Port = (ushort) Rand.Next(0, short.MaxValue),
+                Nonce = (uint) Rand.Next(0, int.MaxValue),
+                UserAgent = $"/NEO:{Rand.Next(1, 10)}.{Rand.Next(1, 100)}.{Rand.Next(1, 1000)}/",
+                CurrentBlockIndex = (uint) Rand.Next(0, int.MaxValue),
                 Relay = false
             };
 

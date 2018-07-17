@@ -102,7 +102,7 @@ namespace NeoSharp.Core.Models
         /// </summary>
         /// <param name="serializer">Serializer</param>
         /// <param name="crypto">Crypto</param>
-        public virtual void UpdateHash(IBinarySerializer serializer, ICrypto crypto)
+        public virtual void UpdateHash(IBinarySerializer serializer, Crypto crypto)
         {
             if (MerkleRoot == null)
             {
