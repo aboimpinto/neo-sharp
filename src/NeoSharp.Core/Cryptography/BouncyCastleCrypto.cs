@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using NeoSharp.Core.Extensions;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Asn1.X9;
