@@ -18,15 +18,12 @@ namespace NeoSharp.Core.Test.Serializers
     [TestClass]
     public class UtBinarySerializer : TestBase
     {
-        private Crypto _crypto;
         private IBinarySerializer _serializer;
         private IBinaryDeserializer _deserializer;
 
         [TestInitialize]
         public void WarmUpSerializer()
         {
-            _crypto = new BouncyCastleCrypto();
-
             BinarySerializer.RegisterTypes(typeof(SetTest));
             _serializer = new BinarySerializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly);
             _deserializer = new BinaryDeserializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly);
@@ -245,6 +242,15 @@ namespace NeoSharp.Core.Test.Serializers
         }
 
         [TestMethod]
+        public void Serialize_EnumArray()
+        {
+            var test = new CoinState[] { CoinState.Confirmed, CoinState.Locked };
+            var copy = BinaryDeserializer.Default.Deserialize<CoinState[]>(BinarySerializer.Default.Serialize(test));
+
+            CollectionAssert.AreEqual(test, copy);
+        }
+
+        [TestMethod]
         public void DeserializeReadOnly()
         {
             var readOnly = new DummyReadOnly();
@@ -369,11 +375,11 @@ namespace NeoSharp.Core.Test.Serializers
                 }
             };
 
-            blockHeader.UpdateHash(_serializer, _crypto);
+            blockHeader.UpdateHash();
 
             var blockHeaderCopy = _deserializer.Deserialize<Block>(_serializer.Serialize(blockHeader));
 
-            blockHeaderCopy.UpdateHash(_serializer, _crypto);
+            blockHeaderCopy.UpdateHash();
 
             Assert.AreEqual(blockHeader.ConsensusData, blockHeaderCopy.ConsensusData);
             Assert.AreEqual(blockHeader.Hash, blockHeaderCopy.Hash);

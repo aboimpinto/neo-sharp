@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoSharp.Core.Cryptography;
+using NeoSharp.Core.DI;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.SmartContract;
 using NeoSharp.Core.Types;

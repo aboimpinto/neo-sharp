@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NeoSharp.Application.Attributes;
 using NeoSharp.BinarySerialization;
+using NeoSharp.BinarySerialization.DI;
 using NeoSharp.Core.Blockchain;
+using NeoSharp.Core.DI;
 using NeoSharp.Core.Extensions;
 using NeoSharp.Core.Logging;
 using NeoSharp.Core.Network;
@@ -149,7 +151,9 @@ namespace NeoSharp.Application.Client
             IRpcServer rpcInit,
             IBinarySerializer serializer,
             IBlockchain blockchain,
-            IWalletManager walletManager)
+            IWalletManager walletManager,
+            ICryptoInitializer cryptoInitializer,
+            IBinaryInitializer binaryInitializer)
         {
             _consoleReader = consoleReaderInit;
             _consoleWriter = consoleWriterInit;
@@ -284,7 +288,9 @@ namespace NeoSharp.Application.Client
                 if (cmd == null)
                 {
                     if (cmds.Length > 0)
+                    {
                         throw (new Exception($"Wrong parameters for <{cmds.FirstOrDefault().Command}>"));
+                    }
 
                     throw (new Exception($"Command not found <{command}>"));
                 }
@@ -299,14 +305,19 @@ namespace NeoSharp.Application.Client
 
                         // Invoke
 
-                        cmd.Method.Invoke(this, cmd.ConvertToArguments(cmdArgs.Skip(cmd.CommandLength).ToArray()));
+                        var ret = cmd.Method.Invoke(this, cmd.ConvertToArguments(cmdArgs.Skip(cmd.CommandLength).ToArray()));
+
+                        if (ret is Task task)
+                        {
+                            task.Wait();
+                        }
                     }
 
                 return true;
             }
             catch (Exception e)
             {
-                string msg = e.InnerException != null ? e.InnerException.Message : e.Message;
+                var msg = e.InnerException != null ? e.InnerException.Message : e.Message;
                 _consoleWriter.WriteLine(msg, ConsoleOutputStyle.Error);
 
                 PrintHelp(cmds);
