@@ -19,7 +19,7 @@ namespace NeoSharp.Core.Test.Cryptography
                 new UInt256("e69601364bdac76eeebf277bea25b850aa4c7d9f7d28f670084f7ee801560ea5".HexToBytes())
             };
 
-        private ICrypto _crypto;
+        private Crypto _crypto;
 
         [TestInitialize]
         public void Init()
