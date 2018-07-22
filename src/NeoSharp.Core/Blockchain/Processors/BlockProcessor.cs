@@ -69,7 +69,11 @@ namespace NeoSharp.Core.Blockchain.Processors
         {
             if (block == null) throw new ArgumentNullException(nameof(block));
 
+            // TODO [AboimPinto]: This call cannot be tested, verified that was called or even if logic is write.
+            // When the block reach this class, the Block Hash should be already validated / added
+            // Why the UpdateHash is before the validations of the Block? If any validations fails, the Hash is already updated, what is the consequence?
             block.UpdateHash();
+
 
             if (CurrentBlock == null && block.Index != 0)
             {

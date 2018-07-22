@@ -1,13 +1,7 @@
-using System.Linq;
-using System.Threading.Tasks;
+using System;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using NeoSharp.Core.Blockchain;
 using NeoSharp.Core.Blockchain.Processors;
-using NeoSharp.Core.Cryptography;
-using NeoSharp.Core.Models;
-using NeoSharp.Core.Persistence;
-using NeoSharp.Core.Types;
 using NeoSharp.TestHelpers;
 
 namespace NeoSharp.Core.Test.Blockchain.Processors
@@ -15,6 +9,25 @@ namespace NeoSharp.Core.Test.Blockchain.Processors
     [TestClass]
     public class UtBlockProcessor : TestBase
     {
+        [TestMethod]
+        public void Ctor_CreateValidBlockProcessorObject()
+        {
+            var testee = this.AutoMockContainer.Create<BlockProcessor>();
+
+            testee
+                .Should()
+                .BeOfType<BlockProcessor>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AddBlock_BlockParameterIsNull_ThrowArgumentNullException()
+        {
+            var testee = this.AutoMockContainer.Create<BlockProcessor>();
+
+            testee.AddBlock(null);
+        }
+
         //[TestMethod]
         //public void Process_CallsTransactionProcessorPerTransaction()
         //{
