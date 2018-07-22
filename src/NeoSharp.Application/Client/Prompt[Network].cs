@@ -21,24 +21,6 @@ namespace NeoSharp.Application.Client
         }
 
         /// <summary>
-        /// Start rpc
-        /// </summary>
-        [PromptCommand("rpc start", Category = "Network")]
-        private void RpcStartCommand()
-        {
-            _rpc?.Start();
-        }
-
-        /// <summary>
-        /// Stop rpc
-        /// </summary>
-        [PromptCommand("rpc stop", Category = "Network")]
-        private void RpcStopCommand()
-        {
-            _rpc?.Stop();
-        }
-
-        /// <summary>
         /// Start network
         /// </summary>
         [PromptCommand("network start", Category = "Network")]
