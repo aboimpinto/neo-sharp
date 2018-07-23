@@ -17,6 +17,7 @@ using NeoSharp.Core.Network;
 using NeoSharp.Core.Network.Rpc;
 using NeoSharp.Core.Types;
 using NeoSharp.Core.Wallet;
+using NeoSharp.VM;
 
 namespace NeoSharp.Application.Client
 {
@@ -41,6 +42,10 @@ namespace NeoSharp.Application.Client
         /// </summary>
         private readonly IConsoleWriter _consoleWriter;
         /// <summary>
+        /// VM Factory
+        /// </summary>
+        private readonly IVMFactory _vmFactory;
+        /// <summary>
         /// Logger
         /// </summary>
         private readonly Core.Logging.ILogger<Prompt> _logger;
@@ -57,7 +62,7 @@ namespace NeoSharp.Application.Client
         /// </summary>
         private readonly IBlockchain _blockchain;
         /// <summary>
-        /// Blockchain
+        /// Block Processor
         /// </summary>
         private readonly IBlockProcessor _blockProcessor;
         /// <summary>
@@ -160,7 +165,8 @@ namespace NeoSharp.Application.Client
             IBlockProcessor blockProcessor,
             IWalletManager walletManager,
             ICryptoInitializer cryptoInitializer,
-            IBinaryInitializer binaryInitializer)
+            IBinaryInitializer binaryInitializer,
+            IVMFactory vmFactory)
         {
             _consoleReader = consoleReaderInit;
             _consoleWriter = consoleWriterInit;
@@ -174,6 +180,7 @@ namespace NeoSharp.Application.Client
             _loggerFactory = loggerFactory;
             _logs = new ConcurrentBag<LogEntry>();
             _walletManager = walletManager;
+            _vmFactory = vmFactory;
         }
 
         /// <inheritdoc />
