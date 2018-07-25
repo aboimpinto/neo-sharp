@@ -46,7 +46,7 @@ namespace NeoSharp.Core.Blockchain.Processors
 
             Task.Factory.StartNew(async () =>
             {
-                while (cancellationToken.IsCancellationRequested)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     var blockIndex = _blockPool.CurrentBlock?.Index + 1 ?? 0;
 
