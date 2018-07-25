@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NeoSharp.Core.Blockchain.Processors;
 using NeoSharp.Core.Extensions;
+using NeoSharp.Core.Helpers;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
@@ -222,6 +223,39 @@ namespace NeoSharp.Core.Test.Blockchain.Processors
             repositoryMock.Verify(x => x.SetTotalBlockHeight(newBlock.Index));
         }
 
-        // TODO [AboimPinto]: Still need to find a way to test the run loop
+        [TestMethod]
+        public void Run_BlockInPoolIsNotTheNext_AsyncDelayerCalledToWaitToReceiveCorrectNextBlock()
+        {
+            var waitForDelayForToGetNextBlock = new AutoResetEvent(false);
+
+            var currentBlock = new Block
+            {
+                Index = 0
+            };
+
+            Block nullBlock = null;
+
+            var blockPoolMock = this.AutoMockContainer.GetMock<IBlockPool>();
+            blockPoolMock
+                .SetupGet(x => x.CurrentBlock)
+                .Returns(currentBlock);
+            blockPoolMock
+                .Setup(x => x.TryGet(1, out nullBlock))
+                .Returns(false);
+
+            var testee = this.AutoMockContainer.Create<BlockProcessor>();
+
+            var asyncDelayerMock = this.AutoMockContainer.GetMock<IAsyncDelayer>();
+            asyncDelayerMock
+                .Setup(x => x.Delay(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
+                .Callback(() => { waitForDelayForToGetNextBlock.Set(); })
+                .Returns(Task.Run(() => { }));
+            
+            testee.Run(currentBlock);
+            waitForDelayForToGetNextBlock.WaitOne();
+            testee.Dispose();
+
+            asyncDelayerMock.Verify(x => x.Delay(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()));
+        }
     }
 }
