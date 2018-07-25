@@ -257,7 +257,5 @@ namespace NeoSharp.Core.Test.Blockchain.Processors
 
             asyncDelayerMock.Verify(x => x.Delay(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()));
         }
-
-        // TODO [AboimPinto]: Still need to find a way to test the run loop
     }
 }
