@@ -8,14 +8,25 @@ namespace NeoSharp.Application.Client
 {
     public partial class Prompt : IPrompt
     {
-        void WriteStatePercent(string title, string msg, long value, long max)
+        void WriteStatePercent(string title, string msg, long? value, long? max)
         {
+            if (!value.HasValue || !max.HasValue)
+            {
+                _consoleWriter.WriteLine(title + ": " + msg + " ");
+                return;
+            }
+
             _consoleWriter.Write(title + ": " + msg + " ");
 
-            using (var pg = _consoleWriter.CreatePercent(max))
+            using (var pg = _consoleWriter.CreatePercent(max.Value))
             {
-                pg.Value = value;
+                pg.Value = value.Value;
             }
+        }
+
+        private string FormatState(long? value)
+        {
+            return value.HasValue ? value.Value.ToString("###,###,###,###,##0") : "?";
         }
 
         /// <summary>
@@ -24,19 +35,18 @@ namespace NeoSharp.Application.Client
         [PromptCommand("state", Category = "Blockchain", Help = "Show current state")]
         private void StateCommand()
         {
-            var memStr = _blockchain.MemoryPool.Count.ToString("###,###,###,###,##0");
-            var blockStr = _blockProcessor.BlockPoolSize.ToString("###,###,###,###,##0");
-
-            var headStr = _blockchain.LastBlockHeader.Index.ToString("###,###,###,###,##0");
-            var blStr = _blockchain.CurrentBlock.Index.ToString("###,###,###,###,##0");
-            var blIndex = 0.ToString("###,###,###,###,##0"); // TODO: Change me
+            var memStr = FormatState(_blockchain.MemoryPool?.Count);
+            var blockStr = FormatState(_blockProcessor.BlockPoolSize);
+            var headStr = FormatState(_blockchain.LastBlockHeader?.Index);
+            var blStr = FormatState(_blockchain.CurrentBlock?.Index);
+            var blIndex = FormatState(0); // TODO: Change me
 
             var numSpaces = new int[] { memStr.Length, blockStr.Length, blIndex.Length, headStr.Length, blStr.Length }.Max() + 1;
 
             _consoleWriter.WriteLine("Pools", ConsoleOutputStyle.Information);
             _consoleWriter.WriteLine("");
 
-            WriteStatePercent(" Memory", memStr.PadLeft(numSpaces, ' '), _blockchain.MemoryPool.Count, _blockchain.MemoryPool.Capacity);
+            WriteStatePercent(" Memory", memStr.PadLeft(numSpaces, ' '), _blockchain.MemoryPool.Count, _blockchain.MemoryPool.Max);
             WriteStatePercent(" Blocks", blockStr.PadLeft(numSpaces, ' '), _blockProcessor.BlockPoolSize, _blockProcessor.BlockPoolCapacity);
 
             _consoleWriter.WriteLine("");
@@ -45,8 +55,8 @@ namespace NeoSharp.Application.Client
 
             _consoleWriter.WriteLine("Headers: " + headStr.PadLeft(numSpaces, ' ') + " ");
 
-            WriteStatePercent(" Blocks", blStr.PadLeft(numSpaces, ' '), _blockchain.CurrentBlock.Index, _blockchain.LastBlockHeader.Index);
-            WriteStatePercent("  Index", blIndex.PadLeft(numSpaces, ' '), 0, _blockchain.CurrentBlock.Index);
+            WriteStatePercent(" Blocks", blStr.PadLeft(numSpaces, ' '), _blockchain.CurrentBlock?.Index, _blockchain.LastBlockHeader?.Index);
+            WriteStatePercent("  Index", blIndex.PadLeft(numSpaces, ' '), 0, _blockchain.CurrentBlock?.Index);
         }
 
         /// <summary>
