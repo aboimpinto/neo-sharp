@@ -221,5 +221,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processors
                 blockHeader.Version == newBlock.Version)));
             repositoryMock.Verify(x => x.SetTotalBlockHeight(newBlock.Index));
         }
+
+        // TODO [AboimPinto]: Still need to find a way to test the run loop
     }
 }

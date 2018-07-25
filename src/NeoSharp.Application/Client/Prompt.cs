@@ -60,9 +60,10 @@ namespace NeoSharp.Application.Client
         /// </summary>
         private readonly IBlockchain _blockchain;
         /// <summary>
-        /// Block Processor
+        /// Block Pool
         /// </summary>
-        private readonly IBlockProcessor _blockProcessor;
+        private readonly IBlockPool _blockPool;
+
         /// <summary>
         /// Rpc server
         /// </summary>
@@ -148,7 +149,7 @@ namespace NeoSharp.Application.Client
         /// <param name="rpcInit">Rpc server</param>
         /// <param name="serializer">Binary serializer</param>
         /// <param name="blockchain">Blockchain</param>
-        /// <param name="blockProcessor">Block Processor</param>
+        /// <param name="blockPool">Block pool</param>
         /// <param name="walletManager"></param>
         /// <param name="vmFactory">VM Factory</param>
         public Prompt(
@@ -161,7 +162,7 @@ namespace NeoSharp.Application.Client
             IRpcServer rpcInit,
             IBinarySerializer serializer,
             IBlockchain blockchain,
-            IBlockProcessor blockProcessor,
+            IBlockPool blockPool,
             IWalletManager walletManager,
             IVMFactory vmFactory)
         {
@@ -173,7 +174,7 @@ namespace NeoSharp.Application.Client
             _serializer = serializer;
             _rpc = rpcInit;
             _blockchain = blockchain;
-            _blockProcessor = blockProcessor;
+            _blockPool = blockPool;
             _loggerFactory = loggerFactory;
             _logs = new ConcurrentBag<LogEntry>();
             _walletManager = walletManager;
