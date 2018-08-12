@@ -1,8 +1,8 @@
-﻿using NeoSharp.Application.Client;
-using NeoSharp.BinarySerialization;
+﻿using System.Linq;
+using NeoSharp.Application.Client;
 using NeoSharp.Core;
-using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.DI;
+using NeoSharp.Core.Extensions;
 
 namespace NeoSharp.Application.DI
 {
@@ -11,29 +11,19 @@ namespace NeoSharp.Application.DI
         public void Register(IContainerBuilder containerBuilder)
         {
             containerBuilder.Register<IBootstrapper, Bootstrapper>();
-
             containerBuilder.RegisterSingleton<IPrompt, Prompt>();
+            containerBuilder.RegisterSingleton<IPromptUserVariables, PromptUserVariables>();
             containerBuilder.RegisterSingleton<IConsoleReader, ConsoleReader>();
             containerBuilder.RegisterSingleton<IConsoleWriter, ConsoleWriter>();
 
-            containerBuilder.OnBuild += c =>
-            {
-                InitializeCrypto(c.Resolve<Crypto>());
-                InitializeBinarySerializer(c.Resolve<IBinarySerializer>(), c.Resolve<IBinaryDeserializer>());
-            };
-        }
+            // Get prompt controllers
 
-        private static void InitializeCrypto(Crypto crypto)
-        {
-            Crypto.Initialize(crypto);
-        }
+            var promptHandlerTypes = typeof(IPromptController).Assembly
+               .GetExportedTypes()
+               .Where(t => t.IsClass && !t.IsInterface && !t.IsAbstract && typeof(IPromptController).IsAssignableFrom(t))
+               .ToArray();
 
-        private static void InitializeBinarySerializer(
-            IBinarySerializer binarySerializer,
-            IBinaryDeserializer binaryDeserializer)
-        {
-            BinarySerializer.Initialize(binarySerializer);
-            BinaryDeserializer.Initialize(binaryDeserializer);
+            containerBuilder.RegisterCollection(typeof(IPromptController), promptHandlerTypes);
         }
     }
 }
