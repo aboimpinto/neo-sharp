@@ -94,7 +94,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processors
                 Hash = new UInt256("1a259dba256600620c6c91094f3a300b30f0cbaecee19c6114deffd3288957d7".HexToBytes())
             };
 
-            var expectedBlockHeader = new BlockHeader(BlockHeader.HeaderType.Extended);
+            var expectedBlockHeader = new BlockHeader(HeaderType.Extended);
 
             var blockPoolMock = this.AutoMockContainer.GetMock<IBlockPool>();
             blockPoolMock
@@ -119,7 +119,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processors
                 Hash = new UInt256("1a259dba256600620c6c91094f3a300b30f0cbaecee19c6114deffd3288957d7".HexToBytes())
             };
 
-            var expectedBlockHeader = new BlockHeader(BlockHeader.HeaderType.Header);
+            var expectedBlockHeader = new BlockHeader(HeaderType.Header);
 
             var blockPoolMock = this.AutoMockContainer.GetMock<IBlockPool>();
             blockPoolMock

@@ -103,7 +103,7 @@ namespace NeoSharp.Core.Blockchain.Processors
 
             var blockHeader = await _repository.GetBlockHeader(blockHash);
 
-            return blockHeader != null && blockHeader.Type == BlockHeader.HeaderType.Extended;
+            return blockHeader != null && blockHeader.Type == HeaderType.Extended;
         }
     }
 }

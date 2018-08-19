@@ -117,7 +117,7 @@ namespace NeoSharp.Core.Blockchain
         {
             var header = await _repository.GetBlockHeader(hash);
 
-            if (header == null || header.Type != BlockHeader.HeaderType.Extended) return null;
+            if (header == null || header.Type != HeaderType.Extended) return null;
 
             var transactions = new Transaction[header.TransactionCount];
 
@@ -200,7 +200,7 @@ namespace NeoSharp.Core.Blockchain
                     // We receive the header as extended on "BlockHeadersMessage" when is serialized from one complete Block
                     // but we want to know when is a header and when not, without checking the hashes
 
-                    header.Type = BlockHeader.HeaderType.Header;
+                    header.Type = HeaderType.Header;
                 }
 
                 // Validate
