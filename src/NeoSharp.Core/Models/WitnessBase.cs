@@ -1,4 +1,5 @@
 ﻿using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 using Newtonsoft.Json;
 
@@ -23,9 +24,10 @@ namespace NeoSharp.Core.Models
 
         protected void Sign(WitnessBase witnessBase)
         {
-            this.Hash = witnessBase.Hash;
             this.InvocationScript = witnessBase.InvocationScript;
             this.VerificationScript = witnessBase.VerificationScript;
+
+            this.Hash = new UInt160(Crypto.Default.Hash160(this.VerificationScript));
         }
         #endregion
     }

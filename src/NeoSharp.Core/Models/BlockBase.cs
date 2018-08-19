@@ -1,4 +1,5 @@
 ﻿using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 using Newtonsoft.Json;
 
@@ -39,28 +40,24 @@ namespace NeoSharp.Core.Models
         [BinaryProperty(7)]
         public HeaderType Type { get; private set; }
 
-        [BinaryProperty(100)]
-        [JsonProperty("txhashes")]
-        public UInt256[] TransactionHashes { get; set; }
-
-        [JsonProperty("txcount")] public virtual int TransactionCount => TransactionHashes?.Length ?? 0;
-
-        [JsonProperty("hash")] public UInt256 Hash { get; set; }
+        [JsonProperty("hash")] public UInt256 Hash { get; private set; }
         #endregion
 
         #region Protected Methods 
-        protected void Sign(BlockBase blockBase)
+        protected void Sign(BlockBase blockBase, byte[] signingSettings, UInt256 merkleRoot)
         {
             this.Version = blockBase.Version;
             this.PreviousBlockHash = blockBase.PreviousBlockHash;
-            this.MerkleRoot = blockBase.MerkleRoot;
             this.Timestamp = blockBase.Timestamp;
             this.Index = blockBase.Index;
             this.ConsensusData = blockBase.ConsensusData;
             this.NextConsensus = blockBase.NextConsensus;
             this.Type = blockBase.Type;
-            this.TransactionHashes = blockBase.TransactionHashes;
-            this.Hash = blockBase.Hash;
+
+            this.MerkleRoot = merkleRoot;
+            
+            this.Hash = new UInt256(Crypto.Default.Hash256(signingSettings));
+
         }
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 using Newtonsoft.Json;
 
@@ -33,14 +34,15 @@ namespace NeoSharp.Core.Models
         #endregion
 
         #region Protected Methods 
-        public void Sign(TransactionBase transactionBase)
+        public void Sign(TransactionBase transactionBase, byte[] signingSettings)
         {
-            this.Hash = transactionBase.Hash;
             this.Type = transactionBase.Type;
             this.Version = transactionBase.Version;
             this.Attributes = transactionBase.Attributes;
             this.Inputs = transactionBase.Inputs;
             this.Outputs = transactionBase.Outputs;
+
+            this.Hash = new UInt256(Crypto.Default.Hash256(signingSettings));
         }
         #endregion
     }

@@ -1,5 +1,7 @@
 ﻿using System;
 using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Cryptography;
+using NeoSharp.Core.Types;
 using Newtonsoft.Json;
 
 namespace NeoSharp.Core.Models
@@ -12,21 +14,42 @@ namespace NeoSharp.Core.Models
         [JsonProperty("script")]
         public SignedWitness Witness { get; }
 
+        [BinaryProperty(100)]
+        [JsonProperty("txhashes")]
+        public UInt256[] TransactionHashes { get; }
+
         [BinaryProperty(100, MaxLength = 0x10000, Override = true)]
-        public SignedTransaction[] Transactions;
+        public SignedTransaction[] Transactions { get; }
+
+        [JsonProperty("txcount")] public int TransactionCount => TransactionHashes?.Length ?? 0; 
         #endregion
 
         #region Constructor 
         public SignedBlock(UnsignedBlock unsignedBlock)
         {
-            this.Sign(unsignedBlock);
+            // TODO [AboimPinto]: In the old logic this was after the creation of the Hash. Creating new Witness object will produce a different hash on the BlockHeader. This need to be verified.
+            this.Witness = new SignedWitness(unsignedBlock.Witness);
 
-            for (var i = 0; i < unsignedBlock.TransactionCount - 1; i++)
+            this.TransactionHashes = new UInt256[unsignedBlock.Transactions.Length];
+            this.Transactions = new SignedTransaction[unsignedBlock.Transactions.Length];
+            for (var i = 0; i < unsignedBlock.Transactions.Length; i++)
             {
-                Transactions[i] = new SignedTransaction(unsignedBlock.Transactions[i]);
+                this.Transactions[i] = new SignedTransaction(unsignedBlock.Transactions[i]);
+                this.TransactionHashes[i] = this.Transactions[i].Hash;
             }
 
-            this.Witness = new SignedWitness(unsignedBlock.Witness);
+            var signingSettings = BinarySerializer.Default.Serialize(this, new BinarySerializerSettings()
+            {
+                Filter = x =>
+                    x != nameof(this.Witness) &&
+                    x != nameof(this.Type) &&
+                    x != nameof(this.TransactionHashes) &&
+                    x != nameof(this.Transactions) 
+            });
+
+            var merkleRoot = this.MerkleRoot == null ? MerkleTree.ComputeRoot(TransactionHashes) : null;
+
+            this.Sign(unsignedBlock, signingSettings, merkleRoot);
         }
         #endregion
     }

@@ -10,18 +10,24 @@ namespace NeoSharp.Core.Models
         #region Public Properties 
         [BinaryProperty(255)]
         [JsonProperty("witness")]
-        public SignedWitness[] Witness;
+        public SignedWitness[] Witness { get; private set; }
         #endregion
 
         #region Constructor 
         public SignedTransaction(UnsignedTransaction unsignedTransaction)
         {
-            this.Sign(unsignedTransaction);
-
-            for (var i = 0; i < unsignedTransaction.Witness.Length - 1; i++)
+            this.Witness = new SignedWitness[unsignedTransaction.Witness.Length];
+            for (var i = 0; i < unsignedTransaction.Witness.Length; i++)
             {
                 this.Witness[i] = new SignedWitness(unsignedTransaction.Witness[i]);
             }
+
+            var signingSettings = BinarySerializer.Default.Serialize(this, new BinarySerializerSettings()
+            {
+                Filter = x => x != nameof(this.Witness)
+            });
+
+            this.Sign(unsignedTransaction, signingSettings);
         }
         #endregion
     }
