@@ -26,7 +26,7 @@ namespace NeoSharp.Core.Models
                     x != nameof(this.Type)              // TODO [AboimPinto]: Previous logic had the TransactionHashes here, but the blockHeader don't have transactions. This need to be verified.
             });
 
-            this.Sign(unsignedBlockHeader, signingSettings, null);      // TODO [AboimPinto]: Verify the MerkleRoot because in the BlockHeader there aren't transactions or transaction hashes.
+            this.Sign(unsignedBlockHeader, signingSettings);      // TODO [AboimPinto]: Verify the MerkleRoot because in the BlockHeader there aren't transactions or transaction hashes.
         }
         #endregion
     }

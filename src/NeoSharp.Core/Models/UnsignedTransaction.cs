@@ -2,7 +2,7 @@
 
 namespace NeoSharp.Core.Models
 {
-    public class UnsignedTransaction : TransactionBase
+    public abstract class UnsignedTransaction : TransactionBase
     {
         #region Public Properties 
         public new UInt256 Hash { get; set; }

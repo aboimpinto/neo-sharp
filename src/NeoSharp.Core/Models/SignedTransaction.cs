@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace NeoSharp.Core.Models
 {
     [Serializable]
-    public class SignedTransaction : TransactionBase
+    public abstract class SignedTransaction : TransactionBase
     {
         #region Public Properties 
         [BinaryProperty(255)]
@@ -14,7 +14,7 @@ namespace NeoSharp.Core.Models
         #endregion
 
         #region Constructor 
-        public SignedTransaction(UnsignedTransaction unsignedTransaction)
+        protected SignedTransaction(UnsignedTransaction unsignedTransaction)
         {
             this.Witness = new SignedWitness[unsignedTransaction.Witness.Length];
             for (var i = 0; i < unsignedTransaction.Witness.Length; i++)
@@ -22,7 +22,7 @@ namespace NeoSharp.Core.Models
                 this.Witness[i] = new SignedWitness(unsignedTransaction.Witness[i]);
             }
 
-            var signingSettings = BinarySerializer.Default.Serialize(this, new BinarySerializerSettings()
+            var signingSettings = BinarySerializer.Default.Serialize(this, new BinarySerializerSettings
             {
                 Filter = x => x != nameof(this.Witness)
             });

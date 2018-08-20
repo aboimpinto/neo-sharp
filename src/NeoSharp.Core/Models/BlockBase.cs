@@ -8,7 +8,6 @@ namespace NeoSharp.Core.Models
     public abstract class BlockBase
     {
         #region Public Properties 
-
         [BinaryProperty(0)]
         [JsonProperty("version")]
         public uint Version { get; private set; }
@@ -16,10 +15,6 @@ namespace NeoSharp.Core.Models
         [BinaryProperty(1)]
         [JsonProperty("previousblockhash")]
         public UInt256 PreviousBlockHash { get; private set; }
-
-        [BinaryProperty(2)]
-        [JsonProperty("merkleroot")]
-        public UInt256 MerkleRoot { get; private set; }
 
         [BinaryProperty(3)]
         [JsonProperty("time")]
@@ -44,7 +39,7 @@ namespace NeoSharp.Core.Models
         #endregion
 
         #region Protected Methods 
-        protected void Sign(BlockBase blockBase, byte[] signingSettings, UInt256 merkleRoot)
+        protected void Sign(BlockBase blockBase, byte[] signingSettings)
         {
             this.Version = blockBase.Version;
             this.PreviousBlockHash = blockBase.PreviousBlockHash;
@@ -54,8 +49,6 @@ namespace NeoSharp.Core.Models
             this.NextConsensus = blockBase.NextConsensus;
             this.Type = blockBase.Type;
 
-            this.MerkleRoot = merkleRoot;
-            
             this.Hash = new UInt256(Crypto.Default.Hash256(signingSettings));
 
         }

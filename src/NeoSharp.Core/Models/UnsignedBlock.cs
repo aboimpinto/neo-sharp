@@ -9,8 +9,6 @@ namespace NeoSharp.Core.Models
 
         public new UInt256 PreviousBlockHash { get; set; }
 
-        public new UInt256 MerkleRoot { get; set; }
-
         public new uint Timestamp { get; set; }
 
         public new uint Index { get; set; }
@@ -21,11 +19,9 @@ namespace NeoSharp.Core.Models
 
         public new HeaderType Type { get; set; }
 
-        public new UInt256[] TransactionHashes { get; set; }
-
         public UnsignedWitness Witness { get; set; }
 
-        public UnsignedTransaction[] Transactions;
+        public TransactionBase[] Transactions;
         #endregion
 
         #region Constructor

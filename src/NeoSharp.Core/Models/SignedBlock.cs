@@ -1,6 +1,7 @@
 ﻿using System;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
+using NeoSharp.Core.Models.Factories;
 using NeoSharp.Core.Types;
 using Newtonsoft.Json;
 
@@ -10,6 +11,10 @@ namespace NeoSharp.Core.Models
     public class SignedBlock : BlockBase
     {
         #region Public Properties 
+        [BinaryProperty(2)]
+        [JsonProperty("merkleroot")]
+        public UInt256 MerkleRoot { get; }
+
         [BinaryProperty(8)]
         [JsonProperty("script")]
         public SignedWitness Witness { get; }
@@ -34,7 +39,7 @@ namespace NeoSharp.Core.Models
             this.Transactions = new SignedTransaction[unsignedBlock.Transactions.Length];
             for (var i = 0; i < unsignedBlock.Transactions.Length; i++)
             {
-                this.Transactions[i] = new SignedTransaction(unsignedBlock.Transactions[i]);
+                this.Transactions[i] = new SignedTransactionFactory().GetSignedTransaction(unsignedBlock.Transactions[i]);
                 this.TransactionHashes[i] = this.Transactions[i].Hash;
             }
 
@@ -47,9 +52,9 @@ namespace NeoSharp.Core.Models
                     x != nameof(this.Transactions) 
             });
 
-            var merkleRoot = this.MerkleRoot == null ? MerkleTree.ComputeRoot(TransactionHashes) : null;
+            this.MerkleRoot = MerkleTree.ComputeRoot(TransactionHashes);
 
-            this.Sign(unsignedBlock, signingSettings, merkleRoot);
+            this.Sign(unsignedBlock, signingSettings);
         }
         #endregion
     }

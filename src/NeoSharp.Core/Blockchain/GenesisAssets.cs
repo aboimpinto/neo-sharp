@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
-using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Extensions;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Network;
 using NeoSharp.Core.SmartContract;
 using NeoSharp.Core.Types;
-using NeoSharp.Core.Wallet.Helpers;
 using NeoSharp.VM;
 
 namespace NeoSharp.Core.Blockchain
