@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NeoSharp.Core.Blockchain.Processors;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
+using NeoSharp.Core.Models.Builders;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
 
@@ -61,10 +62,13 @@ namespace NeoSharp.Core.Blockchain
             LastBlockHeader = await GetBlockHeader(blockHeaderHeight);
 
             _blockProcessor.OnBlockProcessed += BlockProcessed;
-            _blockProcessor.Run(CurrentBlock);
+            //_blockProcessor.Run(CurrentBlock);
 
             if (CurrentBlock == null || LastBlockHeader == null)
             {
+                var genesisBlock = new BlockBuilder()
+                    .BuildSignedGenesisBlock();
+
                 await _blockProcessor.AddBlock(Genesis.GenesisBlock);
             }
         }

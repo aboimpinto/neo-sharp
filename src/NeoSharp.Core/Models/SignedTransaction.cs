@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 
 namespace NeoSharp.Core.Models
 {
-    [Serializable]
     public abstract class SignedTransaction : TransactionBase
     {
         #region Public Properties 

@@ -1,9 +1,13 @@
 ﻿using System;
+using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Converters;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 
 namespace NeoSharp.Core.Models
 {
+    [Serializable]
+    [BinaryTypeSerializer(typeof(TransactionSerializer))]
     public class SignedRegisterTransaction : SignedTransaction
     {
         #region Public Properties 
