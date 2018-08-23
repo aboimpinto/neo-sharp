@@ -1,9 +1,9 @@
 ﻿using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 
-namespace NeoSharp.Core.Models
+namespace NeoSharp.Core.Models.Transactions
 {
-    public class UnsignedRegisterTransaction : UnsignedTransaction
+    public class RegisterTransaction : TransactionBase
     {
         #region Public Properties 
         /// <summary>
@@ -40,9 +40,16 @@ namespace NeoSharp.Core.Models
         #endregion
 
         #region Construtor 
-        public UnsignedRegisterTransaction()
+        public RegisterTransaction()
         {
             this.Type = TransactionType.RegisterTransaction;
+        }
+        #endregion
+
+        #region Public Methods 
+        public new SignedRegisterTransaction Sign()
+        {
+            return new SignedRegisterTransaction(this);
         }
         #endregion
     }

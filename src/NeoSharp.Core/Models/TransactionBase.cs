@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace NeoSharp.Core.Models
 {
-    public abstract class TransactionBase
+    public abstract class TransactionBase 
     {
         #region Public Properties 
         [BinaryProperty(0)]

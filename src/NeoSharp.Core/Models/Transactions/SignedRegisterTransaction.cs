@@ -1,76 +1,65 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NeoSharp.BinarySerialization;
-using NeoSharp.Core.Converters;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 
-namespace NeoSharp.Core.Models
+namespace NeoSharp.Core.Models.Transactions
 {
-    [Serializable]
-    [BinaryTypeSerializer(typeof(SignedTransactionSerializer))]
-    public class SignedRegisterTransaction : SignedTransaction
+    public class SignedRegisterTransaction : SignedTransactionBase
     {
+        #region Private Fields 
+        private readonly RegisterTransaction _registerTransaction;
+        #endregion
+
         #region Public Properties 
         /// <summary>
         /// Asset Type
         /// </summary>
-        public AssetType AssetType { get; }
+        public AssetType AssetType => this._registerTransaction.AssetType;
 
         /// <summary>
         /// Name
         /// </summary>
-        public string Name { get; }
+        public string Name => this._registerTransaction.Name;
 
         /// <summary>
         /// The total number of issues, a total of two modes:
         ///   1. Limited Mode: When Amount is positive, the maximum total amount of the current asset is Amount, and cannot be modified (Equities may support expansion or additional issuance in the future, and will consider the company’s signature or a certain proportion of shareholders Signature recognition).
         ///   2. Unlimited mode: When Amount is equal to -1, the current asset can be issued by the creator indefinitely. This model has the greatest degree of freedom, but it has the lowest credibility and is not recommended for use.
         /// </summary>
-        public Fixed8 Amount { get; }
+        public Fixed8 Amount => this._registerTransaction.Amount;
 
         /// <summary>
         /// Precision
         /// </summary>
-        public byte Precision { get; }
+        public byte Precision => this._registerTransaction.Precision;
 
         /// <summary>
         /// Publisher's public key
         /// </summary>
-        public ECPoint Owner { get; }
+        public ECPoint Owner => this._registerTransaction.Owner;
 
         /// <summary>
         /// Asset Manager Contract Hash Value
         /// </summary>
-        public UInt160 Admin { get; }
+        public UInt160 Admin => this._registerTransaction.Admin;
         #endregion
 
         #region Constructor 
-        public SignedRegisterTransaction(UnsignedTransaction unsignedTransaction) 
+        public SignedRegisterTransaction(RegisterTransaction registerTransaction) : base(registerTransaction)
         {
-            var unsignedRegisterTransaction = (UnsignedRegisterTransaction) unsignedTransaction;
-            if (unsignedRegisterTransaction == null)
-            {
-                throw new ArgumentException("The unsigned transaction is not UnsignedRegisterTransaction.");
-            }
+            this._registerTransaction = registerTransaction;
 
-            this.AssetType = unsignedRegisterTransaction.AssetType;
-            this.Name = unsignedRegisterTransaction.Name;
-            this.Amount = unsignedRegisterTransaction.Amount;
-            this.Precision = unsignedRegisterTransaction.Precision;
-            this.Owner = unsignedRegisterTransaction.Owner;
-            this.Admin = unsignedRegisterTransaction.Admin;
-
-            this.SignTransaction(unsignedTransaction);
+            this.Sign();
         }
         #endregion
 
         #region Override Methods
-        protected override int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
+        public override int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
         {
             var serializeReturn = 1;
 
-            writer.Write((byte) this.AssetType);
+            writer.Write((byte)this.AssetType);
             serializeReturn += writer.WriteVarString(this.Name);
 
             writer.Write(this.Amount.Value);
@@ -84,6 +73,7 @@ namespace NeoSharp.Core.Models
 
             return serializeReturn;
         }
+
         #endregion
     }
 }

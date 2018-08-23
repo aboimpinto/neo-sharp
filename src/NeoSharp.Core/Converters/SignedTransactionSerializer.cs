@@ -9,7 +9,7 @@ using NeoSharp.Core.Models;
 
 namespace NeoSharp.Core.Converters
 {
-    public class TransactionBaseSerializer : IBinaryCustomSerializable
+    public class SignedTransactionSerializer : IBinaryCustomSerializable
     {
         /// <summary>
         /// Cache
@@ -30,10 +30,9 @@ namespace NeoSharp.Core.Converters
 
         public int Serialize(IBinarySerializer serializer, BinaryWriter writer, object value, BinarySerializerSettings settings = null)
         {
-            //var tx = (TransactionBase)value;
+            var tx = (IBinarySerializable)value;
 
-            //return tx.Serialize(serializer, writer, settings);
-            throw new NotImplementedException();
+            return tx.Serialize(serializer, writer, settings);
         }
     }
 }

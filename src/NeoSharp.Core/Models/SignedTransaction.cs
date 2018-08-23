@@ -1,10 +1,10 @@
-﻿using System;
+﻿using System.IO;
 using NeoSharp.BinarySerialization;
 using Newtonsoft.Json;
 
 namespace NeoSharp.Core.Models
 {
-    public abstract class SignedTransaction : TransactionBase
+    public abstract class SignedTransaction : TransactionBase, IBinarySerializable      // TODO: Maybe the combination of this two on the SignedTransactionBase abstract class.
     {
         #region Public Properties 
         [BinaryProperty(255)]
@@ -12,8 +12,41 @@ namespace NeoSharp.Core.Models
         public SignedWitness[] Witness { get; private set; }
         #endregion
 
-        #region Constructor 
-        protected SignedTransaction(UnsignedTransaction unsignedTransaction)
+        #region IBinarySerializable implementation
+        public int Serialize(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
+        {
+            var serializeResult = 2;
+
+            writer.Write((byte)Type);
+            writer.Write(Version);
+
+            // Exclusive transaction data
+            serializeResult += this.SerializeExecusiveData(serializer, writer, settings);
+
+            // Shared transaction data
+            serializeResult += serializer.Serialize(this.Attributes, writer, settings);
+            serializeResult += serializer.Serialize(this.Inputs, writer, settings);
+            serializeResult += serializer.Serialize(this.Outputs, writer, settings);
+
+            // Serialize sign
+            if (settings?.Filter?.Invoke(nameof(this.Witness)) != false)
+            {
+                serializeResult += serializer.Serialize(this.Witness, writer, settings);
+            }
+
+            return serializeResult;
+        }
+        #endregion
+
+        #region Public Virtual Methods
+        protected virtual int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
+        {
+            return 0;
+        }
+        #endregion
+
+        #region Protected Methods
+        public void SignTransaction(UnsignedTransaction unsignedTransaction)
         {
             this.Witness = new SignedWitness[unsignedTransaction.Witness.Length];
             for (var i = 0; i < unsignedTransaction.Witness.Length; i++)
