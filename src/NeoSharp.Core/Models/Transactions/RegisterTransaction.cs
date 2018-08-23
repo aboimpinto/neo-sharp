@@ -45,12 +45,5 @@ namespace NeoSharp.Core.Models.Transactions
             this.Type = TransactionType.RegisterTransaction;
         }
         #endregion
-
-        #region Public Methods 
-        public new SignedRegisterTransaction Sign()
-        {
-            return new SignedRegisterTransaction(this);
-        }
-        #endregion
     }
 }

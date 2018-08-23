@@ -1,5 +1,4 @@
-﻿using System.IO;
-using NeoSharp.BinarySerialization;
+﻿using System.Collections.Generic;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 
@@ -46,34 +45,34 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Constructor 
-        public SignedRegisterTransaction(RegisterTransaction registerTransaction) : base(registerTransaction)
+        public SignedRegisterTransaction(RegisterTransaction registerTransaction, UInt256 hash, IEnumerable<Witnesses.SignedWitness> witnesses) 
+            : base(registerTransaction, hash, witnesses)
         {
             this._registerTransaction = registerTransaction;
 
-            this.Sign();
+            //this.Sign();
         }
         #endregion
 
         #region Override Methods
-        public override int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
-        {
-            var serializeReturn = 1;
+        //public override int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
+        //{
+        //    var serializeReturn = 1;
 
-            writer.Write((byte)this.AssetType);
-            serializeReturn += writer.WriteVarString(this.Name);
+        //    writer.Write((byte)this.AssetType);
+        //    serializeReturn += writer.WriteVarString(this.Name);
 
-            writer.Write(this.Amount.Value);
-            serializeReturn += Fixed8.Size;
+        //    writer.Write(this.Amount.Value);
+        //    serializeReturn += Fixed8.Size;
 
-            writer.Write(Precision);
-            serializeReturn++;
+        //    writer.Write(Precision);
+        //    serializeReturn++;
 
-            serializeReturn += serializer.Serialize(Owner, writer, settings);
-            serializeReturn += serializer.Serialize(Admin, writer, settings);
+        //    serializeReturn += serializer.Serialize(Owner, writer, settings);
+        //    serializeReturn += serializer.Serialize(Admin, writer, settings);
 
-            return serializeReturn;
-        }
-
+        //    return serializeReturn;
+        //}
         #endregion
     }
 }

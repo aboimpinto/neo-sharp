@@ -2,7 +2,7 @@
 
 namespace NeoSharp.Core.Models.Transactions
 {
-    public class TransactionBase : ITransactionBase
+    public class TransactionBase 
     {
         public TransactionType Type { get; set; }
 
@@ -15,10 +15,5 @@ namespace NeoSharp.Core.Models.Transactions
         public IList<TransactionOutput> Outputs { get; set; }
 
         public IList<Witnesses.Witness> Witness { get; set; }
-
-        public ISignedTransactionBase Sign()
-        {
-            return new SignedTransactionBase(this);
-        }
     }
 }

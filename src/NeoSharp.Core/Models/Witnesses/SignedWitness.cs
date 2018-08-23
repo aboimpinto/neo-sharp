@@ -1,28 +1,36 @@
-﻿using NeoSharp.Core.Cryptography;
+﻿using System;
+using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Types;
+using Newtonsoft.Json;
 
 namespace NeoSharp.Core.Models.Witnesses
 {
-    public class SignedWitness : ISignedWitnessBase
+    [Serializable]
+    public class SignedWitness 
     {
         #region Private Fields 
-        private readonly IWitnessBase _readOnlyWitnessBase;
+        private readonly Witness _witness;
         #endregion
 
-        #region ISignedWitnessBase implementation 
-        public UInt160 Hash { get; private set; }
+        #region Public Properties 
+        [JsonProperty("txid")]
+        public UInt160 Hash { get; }
 
-        public byte[] InvocationScript => this._readOnlyWitnessBase.InvocationScript;
+        [BinaryProperty(0, MaxLength = 65536)]
+        [JsonProperty("invocation")]
+        public byte[] InvocationScript => this._witness.InvocationScript;
 
-        public byte[] VerificationScript => this._readOnlyWitnessBase.VerificationScript;
+        [BinaryProperty(1, MaxLength = 65536)]
+        [JsonProperty("verification")]
+        public byte[] VerificationScript => this._witness.VerificationScript;
         #endregion
 
         #region Constructor 
-        public SignedWitness(IWitnessBase readOnlyWitnessBase)
+        public SignedWitness(Witness witness, UInt160 hash)
         {
-            this._readOnlyWitnessBase = readOnlyWitnessBase;
+            this._witness = witness;
 
-            this.Hash = new UInt160(Crypto.Default.Hash160(this.VerificationScript));
+            this.Hash = hash;
         }
         #endregion
     }
