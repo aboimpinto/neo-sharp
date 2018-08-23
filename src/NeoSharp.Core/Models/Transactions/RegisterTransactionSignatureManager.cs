@@ -67,7 +67,7 @@ namespace NeoSharp.Core.Models.Transactions
                 bw.Write(registerTransaction.Version);
 
                 // Exclusive transaction data
-                //serializeResult += this.SerializeExecusiveData(serializer, writer, settings);
+                serializeResult += this.SerializeExecusiveData(registerTransaction, bw, settings);
 
                 // Shared transaction data
                 serializeResult += this._binarySerializer.Serialize(registerTransaction.Attributes.ToArray(), bw, settings);
@@ -79,10 +79,28 @@ namespace NeoSharp.Core.Models.Transactions
                 {
                     serializeResult += this._binarySerializer.Serialize(registerTransaction.Witness, bw, settings);
                 }
-                //return customSerializer.Serialize(this._binarySerializer, bw, registerTransaction, settings);
             }
 
             return serializeResult;
+        }
+
+        private int SerializeExecusiveData(RegisterTransaction registerTransaction, BinaryWriter bw, BinarySerializerSettings settings = null)
+        {
+            var serializeReturn = 1;
+
+            bw.Write((byte)registerTransaction.AssetType);
+            serializeReturn += bw.WriteVarString(registerTransaction.Name);
+
+            bw.Write(registerTransaction.Amount.Value);
+            serializeReturn += Fixed8.Size;
+
+            bw.Write(registerTransaction.Precision);
+            serializeReturn++;
+
+            serializeReturn += this._binarySerializer.Serialize(registerTransaction.Owner, bw, settings);
+            serializeReturn += this._binarySerializer.Serialize(registerTransaction.Admin, bw, settings);
+
+            return serializeReturn;
         }
         #endregion
     }

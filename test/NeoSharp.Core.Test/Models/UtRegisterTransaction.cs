@@ -48,21 +48,19 @@ namespace NeoSharp.Core.Test.Models
                 Witness = new List<Core.Models.Witnesses.Witness>()
             };
 
-            var crypto = this.AutoMockContainer.Create<Crypto>();
+            var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
             var binarySerializer = this.AutoMockContainer.Create<BinarySerializer>();
 
             var testee = new RegisterTransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
             var signedRegisterTransaction = testee.Sign(unsignedRegisterTransaction);
 
-            //var signedResult = testee.Sign();
-
-            //signedResult
-            //    .Should()
-            //    .BeOfType<SignedRegisterTransaction>();
-            //signedResult.Hash.ToString(true)
-            //    .Should()
-            //    .Be("0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b");
+            signedRegisterTransaction
+                .Should()
+                .BeOfType<SignedRegisterTransaction>();
+            signedRegisterTransaction.Hash.ToString(true)
+                .Should()
+                .Be("0xc56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b");
         }
     }
 }
