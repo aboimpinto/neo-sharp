@@ -9,11 +9,11 @@ namespace NeoSharp.Core.Test.Blockchain
     [TestClass]
     public class UtBlockBuilder
     {
-        [TestMethod]
-        public void BuildSignedGoverningTokenRegisterTransaction_HashIsCorrect()
-        {
-            var testee = new BlockBuilder();
-            var governingToken = testee.BuildSignedGenesisBlock();
-        }
+        // [TestMethod]
+        // public void BuildSignedGoverningTokenRegisterTransaction_HashIsCorrect()
+        // {
+        //     var testee = new BlockBuilder();
+        //     var governingToken = testee.BuildSignedGenesisBlock();
+        // }
     }
 }
