@@ -12,7 +12,6 @@ using NeoSharp.TestHelpers;
 using NeoSharp.VM;
 using RegisterTransaction = NeoSharp.Core.Models.Transactions.RegisterTransaction;
 using SignedRegisterTransaction = NeoSharp.Core.Models.Transactions.SignedRegisterTransaction;
-using TransactionBase = NeoSharp.Core.Models.TransactionBase;
 
 namespace NeoSharp.Core.Test.Models
 {
@@ -30,9 +29,9 @@ namespace NeoSharp.Core.Test.Models
         }
 
         [TestMethod]
-        public void Sign_ProvideGoverningToken_SignedTypeReturned()
+        public void Sign_ProvideGoverningToken_SignedTypeReturnedWithTheRightHash()
         {
-            BinarySerializer.RegisterTypes(typeof(TransactionBase).Assembly, typeof(BlockHeader).Assembly);
+            BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
             var unsignedRegisterTransaction = new RegisterTransaction
             {

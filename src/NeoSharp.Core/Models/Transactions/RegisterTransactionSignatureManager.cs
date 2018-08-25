@@ -37,8 +37,6 @@ namespace NeoSharp.Core.Models.Transactions
                 Filter = x => x != nameof(registerTransaction.Witness)
             });
 
-            // TODO [AboimPinto]: Between this two steps, there could be a malicious code that change the transaction and we could be saving an invalid transaction.
-
             var hash = new UInt256(this._crypto.Hash256(signingSettings));
 
             return new SignedRegisterTransaction(registerTransaction, hash, signedWitnesses);
@@ -58,7 +56,6 @@ namespace NeoSharp.Core.Models.Transactions
 
         private int Serialize(RegisterTransaction registerTransaction, Stream stream, BinarySerializerSettings settings = null)
         {
-            //var customSerializer = new SignedTransactionSerializer();
             var serializeResult = 2;
 
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
