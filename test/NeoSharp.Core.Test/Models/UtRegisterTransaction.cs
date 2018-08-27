@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
-using NeoSharp.Core.Extensions;
-using NeoSharp.Core.Models;
+using NeoSharp.Core.Models.Builders;
 using NeoSharp.Core.Models.Transactions;
 using NeoSharp.Core.Models.Witnesses;
-using NeoSharp.Core.Types;
 using NeoSharp.TestHelpers;
-using NeoSharp.VM;
 using RegisterTransaction = NeoSharp.Core.Models.Transactions.RegisterTransaction;
 using SignedRegisterTransaction = NeoSharp.Core.Models.Transactions.SignedRegisterTransaction;
 
@@ -34,19 +29,8 @@ namespace NeoSharp.Core.Test.Models
         {
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
-            var unsignedRegisterTransaction = new RegisterTransaction
-            {
-                AssetType = AssetType.GoverningToken,
-                Name = "[{\"lang\":\"zh-CN\",\"name\":\"小蚁股\"},{\"lang\":\"en\",\"name\":\"AntShare\"}]",
-                Amount = Fixed8.FromDecimal(100000000),
-                Precision = 0,
-                Owner = ECPoint.Infinity,
-                Admin = new[] { (byte)EVMOpCode.PUSH1 }.ToScriptHash(),       //TODO: Why this? Check with people
-                Attributes = new List<TransactionAttribute>(),
-                Inputs = new List<CoinReference>(),
-                Outputs = new List<TransactionOutput>(),
-                Witness = new List<Core.Models.Witnesses.Witness>()
-            };
+            var unsignedRegisterTransaction = new TransactionBuilder()
+                .BuildGoverningTokenRegisterTransaction();
 
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
@@ -66,24 +50,10 @@ namespace NeoSharp.Core.Test.Models
         [TestMethod]
         public void Sign_ProvideUtilityToken_SignedTypeReturnedWithTheRightHash()
         {
-            const uint decrementInterval = 2000000;
-            uint[] gasGenerationPerBlock = { 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
-            var unsignedRegisterTransaction = new RegisterTransaction
-            {
-                AssetType = AssetType.UtilityToken,
-                Name = "[{\"lang\":\"zh-CN\",\"name\":\"小蚁币\"},{\"lang\":\"en\",\"name\":\"AntCoin\"}]",
-                Amount = Fixed8.FromDecimal(gasGenerationPerBlock.Sum(p => p) * decrementInterval),
-                Precision = 8,
-                Owner = ECPoint.Infinity,
-                Admin = new[] { (byte)EVMOpCode.PUSH0 }.ToScriptHash(),         //TODO: Why this? Check with people
-                Attributes = new TransactionAttribute[0],
-                Inputs = new List<CoinReference>(),
-                Outputs = new List<TransactionOutput>(),
-                Witness = new List<Core.Models.Witnesses.Witness>()
-            };
+            var unsignedRegisterTransaction = new TransactionBuilder()
+                .BuildUtilityTokenRegisterTransaction();
 
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
