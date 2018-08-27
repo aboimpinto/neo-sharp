@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Types;
 
 namespace NeoSharp.Core.Models.Transactions
 {
+    [Serializable]
     public class SignedRegisterTransaction : SignedTransactionBase
     {
         #region Private Fields 

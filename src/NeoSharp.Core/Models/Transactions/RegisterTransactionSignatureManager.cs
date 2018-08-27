@@ -44,7 +44,6 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Private Methods 
-
         private byte[] GenerateSigningSettings(RegisterTransaction registerTransaction, BinarySerializerSettings serializerSettings = null)
         {
             using (var ms = new MemoryStream())
