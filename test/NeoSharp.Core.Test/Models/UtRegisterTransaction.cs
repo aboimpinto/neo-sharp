@@ -30,7 +30,7 @@ namespace NeoSharp.Core.Test.Models
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
             var unsignedRegisterTransaction = new TransactionBuilder()
-                .BuildGoverningTokenRegisterTransaction();
+                .BuildGenesisGoverningTokenRegisterTransaction();
 
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
@@ -53,7 +53,7 @@ namespace NeoSharp.Core.Test.Models
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
             var unsignedRegisterTransaction = new TransactionBuilder()
-                .BuildUtilityTokenRegisterTransaction();
+                .BuildGenesisUtilityTokenRegisterTransaction();
 
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();

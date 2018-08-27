@@ -12,7 +12,7 @@ namespace NeoSharp.Core.Models.Builders
             //var transactionBuilder = new TransactionBuilder();
 
             //var governingToken = transactionBuilder.BuildSignedGoverningTokenRegisterTransaction();
-            //var utilityToken = transactionBuilder.BuildUtilityTokenRegisterTransaction();
+            //var utilityToken = transactionBuilder.BuildGenesisUtilityTokenRegisterTransaction();
 
             //var genesisMinerTransaction = transactionBuilder.BuildUnsignedGenesisMinerTransaction();
             //var genesisIssueTransaction = transactionBuilder.BuildUnsignedGenesisIssueTransaction(governingToken.Hash, governingToken.Amount);

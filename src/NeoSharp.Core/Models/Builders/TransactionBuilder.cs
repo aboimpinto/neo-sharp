@@ -30,7 +30,7 @@ namespace NeoSharp.Core.Models.Builders
         #endregion
 
         #region Public Methods 
-        public Transactions.RegisterTransaction BuildGoverningTokenRegisterTransaction()
+        public Transactions.RegisterTransaction BuildGenesisGoverningTokenRegisterTransaction()
         {
             var governingTokenRegisterTransaction = new Transactions.RegisterTransaction
             {
@@ -49,7 +49,7 @@ namespace NeoSharp.Core.Models.Builders
             return governingTokenRegisterTransaction;
         }
 
-        public Transactions.RegisterTransaction BuildUtilityTokenRegisterTransaction()
+        public Transactions.RegisterTransaction BuildGenesisUtilityTokenRegisterTransaction()
         {
             const uint decrementInterval = 2000000;
             uint[] gasGenerationPerBlock = { 8, 7, 6, 5, 4, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
