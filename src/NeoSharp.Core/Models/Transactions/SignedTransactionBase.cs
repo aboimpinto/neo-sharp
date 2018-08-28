@@ -45,7 +45,6 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Constructor 
-
         public SignedTransactionBase(TransactionBase transactionBase, UInt256 hash, IEnumerable<Witnesses.SignedWitness> witnesses)
         {
             this._transactionBase = transactionBase;
