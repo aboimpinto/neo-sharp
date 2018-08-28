@@ -71,20 +71,20 @@ namespace NeoSharp.Core.Models.Builders
             return utilityTokenRegisterTransaction;
         }
 
-        //public UnsignedMinerTransaction BuildUnsignedGenesisMinerTransaction()
-        //{
-        //    const uint genesisMinerNonce = 2083236893;
-        //    var genesisMinerTransaction = new UnsignedMinerTransaction
-        //    {
-        //        Nonce = genesisMinerNonce,
-        //        Attributes = new TransactionAttribute[0],
-        //        Inputs = new CoinReference[0],
-        //        Outputs = new TransactionOutput[0],
-        //        Witness = new UnsignedWitness[0]
-        //    };
+        public Transactions.MinerTransaction BuildGenesisMinerTransaction()
+        {
+            const uint genesisMinerNonce = 2083236893;
+            var genesisMinerTransaction = new Transactions.MinerTransaction
+            {
+                Nonce = genesisMinerNonce,
+                Attributes = new List<TransactionAttribute>(),
+                Inputs = new List<CoinReference>(),
+                Outputs = new List<TransactionOutput>(),
+                Witness = new List<Witnesses.Witness>()
+            };
 
-        //    return genesisMinerTransaction;
-        //}
+            return genesisMinerTransaction;
+        }
 
         //public UnsignedIssueTransaction BuildUnsignedGenesisIssueTransaction(UInt256 hash, Fixed8 amount)
         //{

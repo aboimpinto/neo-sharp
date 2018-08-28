@@ -12,20 +12,20 @@ using SignedRegisterTransaction = NeoSharp.Core.Models.Transactions.SignedRegist
 namespace NeoSharp.Core.Test.Models
 {
     [TestClass]
-    public class UtRegisterTransaction : TestBase
+    public class UtRegisterTransactionSignatureManager : TestBase
     {
         [TestMethod]
         public void Ctor_RegisterTransactionCreated()
         {
-            var testee = new RegisterTransaction();
+            var testee = this.AutoMockContainer.Create<RegisterTransactionSignatureManager>();
 
             testee
                 .Should()
-                .BeOfType<RegisterTransaction>();
+                .BeOfType<RegisterTransactionSignatureManager>();
         }
 
         [TestMethod]
-        public void Sign_ProvideGoverningToken_SignedTypeReturnedWithTheRightHash()
+        public void Sign_GenesisGoverningTokenTransaction_SignedTypeReturnedWithTheRightHash()
         {
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
@@ -48,7 +48,7 @@ namespace NeoSharp.Core.Test.Models
         }
 
         [TestMethod]
-        public void Sign_ProvideUtilityToken_SignedTypeReturnedWithTheRightHash()
+        public void Sign_GenesisUtilityTokenTransaction_SignedTypeReturnedWithTheRightHash()
         {
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
