@@ -31,7 +31,7 @@ namespace NeoSharp.Core.Test.Models
                 .BuildGenesisGoverningTokenRegisterTransaction();
 
             var crypto = Crypto.Default;
-            var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
+            var witnessSignatureManager = new WitnessSignatureManager(crypto);
             var binarySerializer = this.AutoMockContainer.Create<BinarySerializer>();
 
             var registerTransactionSignatureManager = new RegisterTransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
@@ -40,12 +40,15 @@ namespace NeoSharp.Core.Test.Models
             var issueTransaction = new TransactionBuilder()
                 .BuildIssueTransaction(signedRegisterTransaction);
 
-            var testee = this.AutoMockContainer.Create<IssueTransactionSignatureManager>();
+            var testee = new IssueTransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
             var signedIssuedTransaction = testee.Sign(issueTransaction);
 
-            signedRegisterTransaction
+            signedIssuedTransaction
                 .Should()
                 .BeOfType<SignedIssueTransaction>();
+            signedIssuedTransaction.Hash.ToString()
+                .Should()
+                .Be("0x3631f66024ca6f5b033d7e0809eb993443374830025af904fb51b0334f127cda");
         }
     }
 }
