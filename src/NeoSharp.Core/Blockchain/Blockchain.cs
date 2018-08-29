@@ -66,8 +66,8 @@ namespace NeoSharp.Core.Blockchain
 
             if (CurrentBlock == null || LastBlockHeader == null)
             {
-                var genesisBlock = new BlockBuilder()
-                    .BuildSignedGenesisBlock();
+                //var genesisBlock = new BlockBuilder()
+                //    .BuildSignedGenesisBlock();
 
                 await _blockProcessor.AddBlock(Genesis.GenesisBlock);
             }

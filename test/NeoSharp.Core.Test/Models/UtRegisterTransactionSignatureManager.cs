@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Converters;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models.Builders;
 using NeoSharp.Core.Models.Transactions;
@@ -14,6 +15,20 @@ namespace NeoSharp.Core.Test.Models
     [TestClass]
     public class UtRegisterTransactionSignatureManager : TestBase
     {
+        //[TestInitialize]
+        //public void Init()
+        //{
+        //    BinarySerializer.RegisterTypes(
+        //        typeof(ECPointBinarySerializer),
+        //        typeof(EndPointConverter),
+        //        typeof(Fixed8TypeConverter),
+        //        typeof(IpEndPointConverter),
+        //        typeof(TransactionAttributeConverter),
+        //        typeof(TransactionSerializer),
+        //        typeof(UInt160Converter),
+        //        typeof(UInt256Converter));
+        //}
+
         [TestMethod]
         public void Ctor_RegisterTransactionCreated()
         {
@@ -27,7 +42,7 @@ namespace NeoSharp.Core.Test.Models
         [TestMethod]
         public void Sign_GenesisGoverningTokenTransaction_SignedTypeReturnedWithTheRightHash()
         {
-            BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
+            //BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
             var unsignedRegisterTransaction = new TransactionBuilder()
                 .BuildGenesisGoverningTokenRegisterTransaction();
@@ -50,7 +65,7 @@ namespace NeoSharp.Core.Test.Models
         [TestMethod]
         public void Sign_GenesisUtilityTokenTransaction_SignedTypeReturnedWithTheRightHash()
         {
-            BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
+            //BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
             var unsignedRegisterTransaction = new TransactionBuilder()
                 .BuildGenesisUtilityTokenRegisterTransaction();

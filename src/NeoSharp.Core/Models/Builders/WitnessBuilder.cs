@@ -4,9 +4,9 @@ namespace NeoSharp.Core.Models.Builders
 {
     public class WitnessBuilder
     {
-        public UnsignedWitness BuildUnsignedGenesisWitness()
+        public Witnesses.Witness BuildUnsignedGenesisWitness()
         {
-            var unsignedWitness = new UnsignedWitness
+            var unsignedWitness = new Witnesses.Witness
             {
                 InvocationScript = new byte[0],
                 VerificationScript = new[] { (byte)EVMOpCode.PUSH1 }

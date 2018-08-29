@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Extensions;
 using NeoSharp.Core.Network;
+using NeoSharp.Core.SmartContract;
 using NeoSharp.Core.Types;
 using NeoSharp.VM;
 
@@ -86,51 +87,50 @@ namespace NeoSharp.Core.Models.Builders
             return genesisMinerTransaction;
         }
 
-        //public UnsignedIssueTransaction BuildUnsignedGenesisIssueTransaction(UInt256 hash, Fixed8 amount)
-        //{
-        //    var transactionOutput = this.GenesisGoverningTokenTransactionOutput(hash, amount);
-        //    var genesisWitness = new WitnessBuilder().BuildUnsignedGenesisWitness();
+        public Transactions.IssueTransaction BuildIssueTransaction(Transactions.SignedRegisterTransaction signedRegisterTransaction)
+        {
+            var transactionOutput = this.GenesisGoverningTokenTransactionOutput(signedRegisterTransaction.Hash, signedRegisterTransaction.Amount);
+            var genesisWitness = new WitnessBuilder().BuildUnsignedGenesisWitness();
 
-        //    var issueTransaction = new UnsignedIssueTransaction
-        //    {
-        //        Attributes = new TransactionAttribute[0],
-        //        Inputs = new CoinReference[0],
-        //        Outputs = new[] { transactionOutput },
-        //        Witness = new[] { genesisWitness }
+            var issueTransaction = new Transactions.IssueTransaction
+            {
+                Attributes = new List<TransactionAttribute>(),
+                Inputs = new List<CoinReference>(),
+                Outputs = new List<TransactionOutput> { transactionOutput },
+                Witness = new List<Witnesses.Witness> { genesisWitness }
+            };
 
-        //    };
-
-        //    return issueTransaction;
-        //}
+            return issueTransaction;
+        }
         #endregion
 
-        //#region Private Methods 
-        //private TransactionOutput GenesisGoverningTokenTransactionOutput(UInt256 hash, Fixed8 amount)
-        //{
-        //    var genesisContract = GenesisValidatorsContract();
+        #region Private Methods 
+        private TransactionOutput GenesisGoverningTokenTransactionOutput(UInt256 hash, Fixed8 amount)
+        {
+            var genesisContract = GenesisValidatorsContract();
 
-        //    var transactionOutput = new TransactionOutput
-        //    {
-        //        AssetId = hash,
-        //        Value = amount,
-        //        ScriptHash = genesisContract.ScriptHash
-        //    };
+            var transactionOutput = new TransactionOutput
+            {
+                AssetId = hash,
+                Value = amount,
+                ScriptHash = genesisContract.ScriptHash
+            };
 
-        //    return transactionOutput;
-        //}
+            return transactionOutput;
+        }
 
-        //private Contract GenesisValidatorsContract()
-        //{
-        //    var genesisValidators = this.GenesisStandByValidators();
-        //    var genesisContract = ContractFactory.CreateMultiplePublicKeyRedeemContract(genesisValidators.Length / 2 + 1, genesisValidators);
+        private Contract GenesisValidatorsContract()
+        {
+            var genesisValidators = this.GenesisStandByValidators();
+            var genesisContract = ContractFactory.CreateMultiplePublicKeyRedeemContract(genesisValidators.Length / 2 + 1, genesisValidators);
 
-        //    return genesisContract;
-        //}
+            return genesisContract;
+        }
 
-        //private ECPoint[] GenesisStandByValidators()
-        //{
-        //    return this._networkConfig.StandByValidator.Select(u => new ECPoint(u.HexToBytes())).ToArray();
-        //}
-        //#endregion
+        private ECPoint[] GenesisStandByValidators()
+        {
+            return this._networkConfig.StandByValidator.Select(u => new ECPoint(u.HexToBytes())).ToArray();
+        }
+        #endregion
     }
 }

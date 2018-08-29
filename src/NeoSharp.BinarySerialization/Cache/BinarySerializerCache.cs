@@ -75,9 +75,20 @@ namespace NeoSharp.BinarySerialization.Cache
                     }
                     else
                     {
-                        serializer = new BinaryAutoSerializer(type);
+                        try
+                        {
+                            // TODO [AboimPinto]: This try/catch is needed because the BinaryAutoSerializer will not work with the new Signed objects.
+                            // This feature need to be reviewed. 
+                            // Only BinarySerializable object that don't have a custom serialization should be proposed to be AutoSerialized.
 
-                        if (((BinaryAutoSerializer)serializer).IsEmpty) return null;
+                            serializer = new BinaryAutoSerializer(type);
+
+                            if (((BinaryAutoSerializer)serializer).IsEmpty) return null;
+                        }
+                        catch (Exception )
+                        {
+                            return null;
+                        }
                     }
                 }
 
