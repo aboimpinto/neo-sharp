@@ -17,7 +17,7 @@ namespace NeoSharp.Core.Models.Witnesses
         #endregion
 
         #region IWitnessSignatureManager Implementation 
-        public SignedWitness SignWitness(Witness witness)
+        public SignedWitness Sign(Witness witness)
         {
             var hash = new UInt160(this._crypto.Hash160(witness.VerificationScript));
 

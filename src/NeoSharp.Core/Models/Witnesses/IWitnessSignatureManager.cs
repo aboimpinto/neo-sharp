@@ -2,6 +2,6 @@
 {
     public interface IWitnessSignatureManager
     {
-        SignedWitness SignWitness(Witness witness);
+        SignedWitness Sign(Witness witness);
     }
 }

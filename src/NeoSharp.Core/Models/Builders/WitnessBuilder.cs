@@ -4,7 +4,7 @@ namespace NeoSharp.Core.Models.Builders
 {
     public class WitnessBuilder
     {
-        public Witnesses.Witness BuildUnsignedGenesisWitness()
+        public Witnesses.Witness BuildGenesisWitness()
         {
             var unsignedWitness = new Witnesses.Witness
             {

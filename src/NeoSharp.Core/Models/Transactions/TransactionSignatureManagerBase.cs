@@ -32,7 +32,7 @@ namespace NeoSharp.Core.Models.Transactions
             where TSigned : SignedTransactionBase
         {
             var signedWitnesses = unsignedTransaction.Witness
-                .Select(unsignedWitness => this._witnessSignatureManager.SignWitness(unsignedWitness))
+                .Select(unsignedWitness => this._witnessSignatureManager.Sign(unsignedWitness))
                 .ToList();
 
             var signingSettings = this.GenerateSigningSettings(unsignedTransaction, new BinarySerializerSettings

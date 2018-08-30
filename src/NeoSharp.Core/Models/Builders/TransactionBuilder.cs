@@ -90,7 +90,7 @@ namespace NeoSharp.Core.Models.Builders
         public Transactions.IssueTransaction BuildIssueTransaction(Transactions.SignedRegisterTransaction signedRegisterTransaction)
         {
             var transactionOutput = this.GenesisGoverningTokenTransactionOutput(signedRegisterTransaction.Hash, signedRegisterTransaction.Amount);
-            var genesisWitness = new WitnessBuilder().BuildUnsignedGenesisWitness();
+            var genesisWitness = new WitnessBuilder().BuildGenesisWitness();
 
             var issueTransaction = new Transactions.IssueTransaction
             {

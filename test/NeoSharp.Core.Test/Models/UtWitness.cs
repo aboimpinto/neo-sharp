@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models.Witnesses;
 
 namespace NeoSharp.Core.Test.Models
@@ -20,22 +21,23 @@ namespace NeoSharp.Core.Test.Models
         [TestMethod]
         public void Sign_SignedTypeReturned()
         {
-            //var testee = new Witness
-            //{
-            //    VerificationScript = new byte[] {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
-            //};
+            var unsignedWitness = new Witness
+            {
+                VerificationScript = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F }
+            };
 
-            //var readOnlyReturn = testee.Sign();
+            var testee = new WitnessSignatureManager(Crypto.Default);
+            var readOnlyReturn = testee.Sign(unsignedWitness);
 
-            //readOnlyReturn
-            //    .Should()
-            //    .BeAssignableTo<ISignedWitnessBase>();
-            //readOnlyReturn.Hash
-            //    .Should()
-            //    .NotBeNull();
-            //readOnlyReturn.Hash.ToString()
-            //    .Should()
-            //    .Be("0xb0c13db07e013a76c84a151b63e31befb6e1917a");
+            readOnlyReturn
+                .Should()
+                .BeAssignableTo<SignedWitness>();
+            readOnlyReturn.Hash
+                .Should()
+                .NotBeNull();
+            readOnlyReturn.Hash.ToString()
+                .Should()
+                .Be("0xb0c13db07e013a76c84a151b63e31befb6e1917a");
         }
     }
 }
