@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
@@ -35,24 +36,34 @@ namespace NeoSharp.Core.Models.Transactions
                 .Select(unsignedWitness => this._witnessSignatureManager.Sign(unsignedWitness))
                 .ToList();
 
-            var signingSettings = this.GenerateSigningSettings(unsignedTransaction, new BinarySerializerSettings
-            {
-                Filter = x => x != nameof(unsignedTransaction.Witness)
-            });
+            var func = typeof(TransactionSignatureManagerBase)
+                .GetMethod("HashCalculator", BindingFlags.NonPublic | BindingFlags.Instance);
+            var funcTypeArgs = new[] {typeof(SignedTransactionBase), typeof(UInt256)};
 
-            var hash = new UInt256(this._crypto.Hash256(signingSettings));
+            var ctrArgs = typeof(Func<,>).MakeGenericType(funcTypeArgs);
+            var funcDelegate = Delegate.CreateDelegate(ctrArgs, this, func);
 
-            return (TSigned)Activator.CreateInstance(typeof(TSigned), unsignedTransaction, hash, signedWitnesses);
+            return (TSigned)Activator.CreateInstance(typeof(TSigned), unsignedTransaction, signedWitnesses, funcDelegate);
         }
 
-        public virtual int SerializeExecusiveData(TransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
+        public virtual int SerializeExecusiveData(SignedTransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
         {
             return 0;
         }
         #endregion
 
-        #region Private Fields 
-        private byte[] GenerateSigningSettings(TransactionBase transactionBase, BinarySerializerSettings serializerSettings = null)
+        #region Private Methods 
+        private UInt256 HashCalculator(SignedTransactionBase signedTransactionBase)
+        {
+            var signingSettings = this.GenerateSigningSettings(signedTransactionBase, new BinarySerializerSettings
+            {
+                Filter = x => x != nameof(signedTransactionBase.Witness)
+            });
+
+            return new UInt256(this._crypto.Hash256(signingSettings));
+        }
+
+        private byte[] GenerateSigningSettings(SignedTransactionBase transactionBase, BinarySerializerSettings serializerSettings = null)
         {
             using (var ms = new MemoryStream())
             {
@@ -61,7 +72,7 @@ namespace NeoSharp.Core.Models.Transactions
             }
         }
 
-        private int Serialize(TransactionBase transactionBase, Stream stream, BinarySerializerSettings settings = null)
+        private int Serialize(SignedTransactionBase transactionBase, Stream stream, BinarySerializerSettings settings = null)
         {
             var serializeResult = 2;
 

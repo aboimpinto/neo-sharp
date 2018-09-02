@@ -22,7 +22,6 @@ namespace NeoSharp.Core.Models.Builders
         #endregion
 
         #region Constructor
-
         public BlockBuilder()
         {
             var builder = new ConfigurationBuilder()
@@ -73,7 +72,6 @@ namespace NeoSharp.Core.Models.Builders
                 signedGoverningTokenRegisterTransaction,                        //Creates NEO 
                 transactionSignatureManager.Sign(utilityToken),                 //Creates GAS
                 transactionSignatureManager.Sign(genesisIssueTransaction)       //Send all NEO to seed contract
-
             };
 
             var blockSignatureManager = new BlockSignatureManager(

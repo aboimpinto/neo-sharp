@@ -28,9 +28,9 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Override Methods
-        public override int SerializeExecusiveData(TransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
+        public override int SerializeExecusiveData(SignedTransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
         {
-            var registerTransaction = (RegisterTransaction) transactionBase;
+            var registerTransaction = (SignedRegisterTransaction) transactionBase;
 
             var serializeReturn = 1;
 

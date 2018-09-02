@@ -66,7 +66,6 @@ namespace NeoSharp.Core.Models.Blocks
         #endregion
 
         #region Constructor
-
         public SignedBlockBase(
             Block block, 
             SignedWitness signedWitness, 
@@ -74,8 +73,6 @@ namespace NeoSharp.Core.Models.Blocks
             Func<SignedBlockBase, UInt256> hashCalculateMethod)
         {
             this._block = block;
-
-            //this.Hash = hash;
 
             this.Witness = signedWitness;
             this.Transactions = signedTransactions.ToArray();

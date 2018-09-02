@@ -22,9 +22,9 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Override Methods
-        public override int SerializeExecusiveData(TransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
+        public override int SerializeExecusiveData(SignedTransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
         {
-            var minerTransaction = (MinerTransaction) transactionBase;
+            var minerTransaction = (SignedMinerTransaction) transactionBase;
 
             binaryWriter.Write(minerTransaction.Nonce);
             return 4;

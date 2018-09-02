@@ -47,34 +47,15 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Constructor 
-        public SignedRegisterTransaction(RegisterTransaction registerTransaction, UInt256 hash, IEnumerable<Witnesses.SignedWitness> witnesses) 
-            : base(registerTransaction, hash, witnesses)
+        public SignedRegisterTransaction(
+            RegisterTransaction registerTransaction, 
+            IEnumerable<Witnesses.SignedWitness> witnesses,
+            Func<SignedTransactionBase, UInt256> hashCalculatorMethod) 
+            : base(registerTransaction, witnesses, hashCalculatorMethod)
         {
             this._registerTransaction = registerTransaction;
-
-            //this.Sign();
+            this.Sign();
         }
-        #endregion
-
-        #region Override Methods
-        //public override int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
-        //{
-        //    var serializeReturn = 1;
-
-        //    writer.Write((byte)this.AssetType);
-        //    serializeReturn += writer.WriteVarString(this.Name);
-
-        //    writer.Write(this.Amount.Value);
-        //    serializeReturn += Fixed8.Size;
-
-        //    writer.Write(Precision);
-        //    serializeReturn++;
-
-        //    serializeReturn += serializer.Serialize(Owner, writer, settings);
-        //    serializeReturn += serializer.Serialize(Admin, writer, settings);
-
-        //    return serializeReturn;
-        //}
         #endregion
     }
 }

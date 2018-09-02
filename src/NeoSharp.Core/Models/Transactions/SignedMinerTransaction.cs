@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NeoSharp.Core.Types;
 
 namespace NeoSharp.Core.Models.Transactions
@@ -17,10 +18,14 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Constructor 
-        public SignedMinerTransaction(MinerTransaction minerTransaction, UInt256 hash, IEnumerable<Witnesses.SignedWitness> witnesses) 
-            : base(minerTransaction, hash, witnesses)
+        public SignedMinerTransaction(
+            MinerTransaction minerTransaction, 
+            IEnumerable<Witnesses.SignedWitness> witnesses,
+            Func<SignedTransactionBase, UInt256> hashCalculatorMethod) 
+            : base(minerTransaction, witnesses, hashCalculatorMethod)
         {
             this._minerTransaction = minerTransaction;
+            this.Sign();
         }
         #endregion
     }

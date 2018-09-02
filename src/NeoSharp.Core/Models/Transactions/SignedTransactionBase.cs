@@ -12,12 +12,13 @@ namespace NeoSharp.Core.Models.Transactions
     {
         #region Private Fields 
         private readonly TransactionBase _transactionBase;
+        private readonly Func<SignedTransactionBase, UInt256> _hashCalculatorMethod;
         #endregion
 
         #region Public Properties 
         [BinaryProperty(0)]
         [JsonProperty("hash")]
-        public UInt256 Hash { get; }
+        public UInt256 Hash { get; private set; }
 
         [BinaryProperty(1)]
         [JsonProperty("type")]
@@ -45,70 +46,23 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Constructor 
-        public SignedTransactionBase(TransactionBase transactionBase, UInt256 hash, IEnumerable<Witnesses.SignedWitness> witnesses)
+        public SignedTransactionBase(
+            TransactionBase transactionBase, 
+            IEnumerable<Witnesses.SignedWitness> witnesses,
+            Func<SignedTransactionBase, UInt256> hashCalculatorMethod)
         {
             this._transactionBase = transactionBase;
+            _hashCalculatorMethod = hashCalculatorMethod;
 
-            this.Hash = hash;
             this.Witness = witnesses.ToArray();
         }
         #endregion
 
-
-
-        //#region Constructor 
-        //public SignedTransactionBase(ITransactionBase transactionBase)
-        //{
-        //    this._transactionBase = transactionBase;
-        //}
-        //#endregion
-
-        //#region Virtual Methods 
-        //public virtual int SerializeExecusiveData(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
-        //{
-        //    return 0;
-        //}
-        //#endregion
-
-        //#region IBinarySerializable implementation 
-        //public int Serialize(IBinarySerializer serializer, BinaryWriter writer, BinarySerializerSettings settings = null)
-        //{
-        //    var serializeResult = 2;
-
-        //    writer.Write((byte)Type);
-        //    writer.Write(Version);
-
-        //    // Exclusive transaction data
-        //    serializeResult += this.SerializeExecusiveData(serializer, writer, settings);
-
-        //    // Shared transaction data
-        //    serializeResult += serializer.Serialize(this.Attributes, writer, settings);
-        //    serializeResult += serializer.Serialize(this.Inputs, writer, settings);
-        //    serializeResult += serializer.Serialize(this.Outputs, writer, settings);
-
-        //    //// Serialize sign
-        //    //if (settings?.Filter?.Invoke(nameof(this.Witness)) != false)
-        //    //{
-        //    //    serializeResult += serializer.Serialize(this.Witness, writer, settings);
-        //    //}
-
-        //    return serializeResult;
-        //}
-        //#endregion
-
-        //#region Public Methods 
-        //public void Sign()
-        //{
-        //    //// TODO [AboimPinto]: Find a way for the BinarySerializer be injected.
-        //    //var serilizationData = BinarySerializer.Default.Serialize(this, new BinarySerializerSettings
-        //    //{
-        //    //    Filter = x => x != nameof(ISignedTransactionBase.Witness)
-        //    //});
-
-        //    //this.Witness = this._transactionBase.Witness.Select(unsignedWitness => unsignedWitness.Sign()).ToArray();
-
-        //    //this.Hash = new UInt256(Crypto.Default.Hash256(serilizationData));
-        //}
-        //#endregion
+        #region Protected Methods 
+        protected void Sign()
+        {
+            this.Hash = this._hashCalculatorMethod.Invoke(this);
+        }
+        #endregion
     }
 }
