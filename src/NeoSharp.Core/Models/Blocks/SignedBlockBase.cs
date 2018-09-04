@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
-using NeoSharp.Core.Models.Transactions;
 using NeoSharp.Core.Models.Witnesses;
 using NeoSharp.Core.Types;
 using Newtonsoft.Json;
@@ -13,7 +12,9 @@ namespace NeoSharp.Core.Models.Blocks
     public class SignedBlockBase
     {
         #region Private Fields 
-        private readonly Block _block;
+        private readonly BlockBase _block;
+        private readonly Func<SignedBlock, UInt256> _signedBlockHashCalculatorMethod;
+        private readonly Func<SignedBlockHeader, UInt256> _signedBlockHeaderHashCalculatorMethod;
         #endregion
 
         #region Public Properties 
@@ -55,32 +56,55 @@ namespace NeoSharp.Core.Models.Blocks
         [JsonProperty("txhashes")]
         public UInt256[] TransactionHashes { get; }
 
-        [BinaryProperty(100, MaxLength = 0x10000, Override = true)]
-        public SignedTransactionBase[] Transactions { get; }
-
         [JsonProperty("txcount")]
         public virtual int TransactionCount => this.TransactionHashes?.Length ?? 0;
 
         [JsonProperty("hash")]
-        public UInt256 Hash { get; }
+        public UInt256 Hash { get; private set; }
         #endregion
 
         #region Constructor
         public SignedBlockBase(
-            Block block, 
+            BlockBase block, 
             SignedWitness signedWitness, 
-            IReadOnlyList<SignedTransactionBase> signedTransactions,
-            Func<SignedBlockBase, UInt256> hashCalculateMethod)
+            IEnumerable<UInt256> signedTransactionHashes,
+            Func<SignedBlock, UInt256> signedBlockHashCalculatorMethod)
         {
             this._block = block;
+            this._signedBlockHashCalculatorMethod = signedBlockHashCalculatorMethod;
 
             this.Witness = signedWitness;
-            this.Transactions = signedTransactions.ToArray();
-            this.TransactionHashes = signedTransactions.Select(x => x.Hash).ToArray();
+            this.TransactionHashes = signedTransactionHashes.ToArray();
 
             this.MerkleRoot = MerkleTree.ComputeRoot(this.TransactionHashes);
+        }
 
-            this.Hash = hashCalculateMethod.Invoke(this);
+        public SignedBlockBase(
+            BlockBase blockHeader,
+            SignedWitness signedWitness,
+            IEnumerable<UInt256> signedTransactionsHashes,
+            Func<SignedBlockHeader, UInt256> signedBlockHederHashCalculatorMethod)
+        {
+            this._block = blockHeader;
+            this._signedBlockHeaderHashCalculatorMethod = signedBlockHederHashCalculatorMethod;
+
+            this.Witness = signedWitness;
+            this.TransactionHashes = signedTransactionsHashes.ToArray();
+
+            this.MerkleRoot = MerkleTree.ComputeRoot(this.TransactionHashes);
+        }
+        #endregion
+
+        #region Public Methods 
+
+        public void SignedBlockHashCalculator()
+        {
+            this.Hash = this._signedBlockHashCalculatorMethod.Invoke((SignedBlock)this);
+        }
+
+        public void SignedBlockHeaderHashCalculator()
+        {
+            this.Hash = this._signedBlockHeaderHashCalculatorMethod.Invoke((SignedBlockHeader) this);
         }
         #endregion
     }

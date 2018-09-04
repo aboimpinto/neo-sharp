@@ -45,68 +45,120 @@ namespace NeoSharp.Core.Models.Blocks
 
             var signedWitness = this._witnessSignatureManager.Sign(unsignedBlock.Witness);
 
-            return new SignedBlock(unsignedBlock, signedWitness, signedBlockTransactions, this.HashCalculator);
+            return new SignedBlock(unsignedBlock, signedWitness, signedBlockTransactions, this.SignedBlockHashCalculator);
         }
 
         public SignedBlock Sign(Block unsignedBlock, IReadOnlyList<SignedTransactionBase> signedTransactions)
         {
             var signedWitness = this._witnessSignatureManager.Sign(unsignedBlock.Witness);
 
-            return new SignedBlock(unsignedBlock, signedWitness, signedTransactions, this.HashCalculator);
+            return new SignedBlock(unsignedBlock, signedWitness, signedTransactions, this.SignedBlockHashCalculator);
+        }
+
+        public SignedBlockHeader Sign(BlockHeader unsighedBlockHeader, IReadOnlyList<SignedTransactionBase> signedTransactions)
+        {
+            var signedWitness = this._witnessSignatureManager.Sign(unsighedBlockHeader.Witness);
+
+            return new SignedBlockHeader(unsighedBlockHeader, signedWitness, signedTransactions, this.SignedBlockHeaderHashCalculator);
         }
         #endregion
 
         #region Private Methods 
-        private UInt256 HashCalculator(SignedBlockBase signedBlockBase)
+        private UInt256 SignedBlockHashCalculator(SignedBlock signedBlock)
         {
-            var signingSettings = this.GenerateSigningSettings(signedBlockBase, new BinarySerializerSettings
+            var signingSettings = this.GenerateBlockSigningSettings(signedBlock, new BinarySerializerSettings
             {
                 Filter = a =>
-                    a != nameof(signedBlockBase.Witness) &&
-                    a != nameof(signedBlockBase.Transactions) &&
-                    a != nameof(signedBlockBase.TransactionHashes) &&
-                    a != nameof(signedBlockBase.Type)
+                    a != nameof(signedBlock.Witness) &&
+                    a != nameof(signedBlock.Transactions) &&
+                    a != nameof(signedBlock.TransactionHashes) &&
+                    a != nameof(signedBlock.Type)
             });
 
             return new UInt256(this._crypto.Hash256(signingSettings));
         }
 
-        private byte[] GenerateSigningSettings(SignedBlockBase blockBase, BinarySerializerSettings serializerSettings = null)
+        private UInt256 SignedBlockHeaderHashCalculator(SignedBlockHeader signedBlockHeader)
+        {
+            var signingSettings = this.GenerateBlockHeaderSigningSettings(signedBlockHeader, new BinarySerializerSettings
+            {
+                Filter = a =>
+                    a != nameof(signedBlockHeader.Witness) &&
+                    a != nameof(signedBlockHeader.TransactionHashes) &&
+                    a != nameof(signedBlockHeader.Type)
+            });
+
+            return new UInt256(this._crypto.Hash256(signingSettings));
+        }
+
+        private byte[] GenerateBlockSigningSettings(SignedBlock signedBlock, BinarySerializerSettings serializerSettings = null)
         {
             using (var ms = new MemoryStream())
             {
-                this.Serialize(blockBase, ms, serializerSettings);
+                this.SerializeSignedBlock(signedBlock, ms, serializerSettings);
                 return ms.ToArray();
             }
         }
 
-        private int Serialize(SignedBlockBase blockBase, Stream stream, BinarySerializerSettings settings = null)
+        private int SerializeSignedBlock(SignedBlock signedBlock, Stream stream, BinarySerializerSettings settings = null)
         {
             var serializeResult = 0;
 
             using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
             {
-                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, blockBase.Version, settings);
-                serializeResult += new UInt256Converter().Serialize(this._binarySerializer, bw, blockBase.PreviousBlockHash, settings);
-                serializeResult += new UInt256Converter().Serialize(this._binarySerializer, bw, blockBase.MerkleRoot, settings);
-                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, blockBase.Timestamp, settings);
-                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, blockBase.Index, settings);
-                serializeResult += new BinaryUInt64Serializer().Serialize(this._binarySerializer, bw, blockBase.ConsensusData, settings);
-                serializeResult += new UInt160Converter().Serialize(this._binarySerializer, bw, blockBase.NextConsensus, settings);
+                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, signedBlock.Version, settings);
+                serializeResult += new UInt256Converter().Serialize(this._binarySerializer, bw, signedBlock.PreviousBlockHash, settings);
+                serializeResult += new UInt256Converter().Serialize(this._binarySerializer, bw, signedBlock.MerkleRoot, settings);
+                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, signedBlock.Timestamp, settings);
+                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, signedBlock.Index, settings);
+                serializeResult += new BinaryUInt64Serializer().Serialize(this._binarySerializer, bw, signedBlock.ConsensusData, settings);
+                serializeResult += new UInt160Converter().Serialize(this._binarySerializer, bw, signedBlock.NextConsensus, settings);
 
-                if (settings?.Filter?.Invoke(nameof(blockBase.Witness)) != false)
+                if (settings?.Filter?.Invoke(nameof(signedBlock.Witness)) != false)
                 {
-                    this._binarySerializer.Serialize(blockBase.Witness, bw, settings);
+                    this._binarySerializer.Serialize(signedBlock.Witness, bw, settings);
                 }
 
-                if (settings?.Filter?.Invoke(nameof(blockBase.Transactions)) != false)
+                if (settings?.Filter?.Invoke(nameof(signedBlock.Transactions)) != false)
                 {
-                    this._binarySerializer.Serialize(blockBase.Transactions, bw, settings);
+                    this._binarySerializer.Serialize(signedBlock.Transactions, bw, settings);
+                }
+            }
+
+            return serializeResult;
+        }
+
+        private byte[] GenerateBlockHeaderSigningSettings(SignedBlockHeader signedBlockHeader, BinarySerializerSettings serializerSettings = null)
+        {
+            using (var ms = new MemoryStream())
+            {
+                this.SerializeSignedBlockHeader(signedBlockHeader, ms, serializerSettings);
+                return ms.ToArray();
+            }
+        }
+
+        private int SerializeSignedBlockHeader(SignedBlockHeader signedBlockHeader, Stream stream, BinarySerializerSettings settings = null)
+        {
+            var serializeResult = 0;
+
+            using (var bw = new BinaryWriter(stream, Encoding.UTF8, true))
+            {
+                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, signedBlockHeader.Version, settings);
+                serializeResult += new UInt256Converter().Serialize(this._binarySerializer, bw, signedBlockHeader.PreviousBlockHash, settings);
+                serializeResult += new UInt256Converter().Serialize(this._binarySerializer, bw, signedBlockHeader.MerkleRoot, settings);
+                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, signedBlockHeader.Timestamp, settings);
+                serializeResult += new BinaryUInt32Serializer().Serialize(this._binarySerializer, bw, signedBlockHeader.Index, settings);
+                serializeResult += new BinaryUInt64Serializer().Serialize(this._binarySerializer, bw, signedBlockHeader.ConsensusData, settings);
+                serializeResult += new UInt160Converter().Serialize(this._binarySerializer, bw, signedBlockHeader.NextConsensus, settings);
+
+                if (settings?.Filter?.Invoke(nameof(signedBlockHeader.Witness)) != false)
+                {
+                    this._binarySerializer.Serialize(signedBlockHeader.Witness, bw, settings);
                 }
             }
 
             return serializeResult;
         }
         #endregion
-   }
+    }
 }
