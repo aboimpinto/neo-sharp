@@ -8,7 +8,7 @@ using NeoSharp.BinarySerialization.SerializationHooks;
 
 namespace NeoSharp.BinarySerialization.Serializers
 {
-    internal class BinaryAutoSerializer : IBinaryCustomSerializable
+    public class BinaryAutoSerializer : IBinaryCustomSerializable
     {
         /// <summary>
         /// Type

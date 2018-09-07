@@ -2,6 +2,11 @@
 using NeoSharp.Core.Blockchain.Processors;
 using NeoSharp.Core.Blockchain.State;
 using NeoSharp.Core.Models;
+using NeoSharp.Core.Models.Blocks;
+using NeoSharp.Core.Models.Transactions;
+using NeoSharp.Core.Models.Witnesses;
+using IssueTransaction = NeoSharp.Core.Models.IssueTransaction;
+using RegisterTransaction = NeoSharp.Core.Models.RegisterTransaction;
 
 namespace NeoSharp.Core.DI.Modules
 {
@@ -29,6 +34,10 @@ namespace NeoSharp.Core.DI.Modules
             #endregion
 
             containerBuilder.RegisterSingleton<IAccountManager, AccountManager>();
+
+            containerBuilder.RegisterSingleton<IBlockSignatureManager, BlockSignatureManager>();
+            containerBuilder.RegisterSingleton<ITransactionSignatureManager, TransactionSignatureManager>();
+            containerBuilder.RegisterSingleton<IWitnessSignatureManager, WitnessSignatureManager>();
         }
     }
 }

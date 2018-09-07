@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
+using NeoSharp.Core.Models.Blocks;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
 using NeoSharp.Persistence.RedisDB.Helpers;
 using StackExchange.Redis;
+using BlockHeader = NeoSharp.Core.Models.BlockHeader;
 
 namespace NeoSharp.Persistence.RedisDB
 {
@@ -95,6 +97,11 @@ namespace NeoSharp.Persistence.RedisDB
         {
             var transactionBytes = _binarySerializer.Serialize(transaction);
             await _redisDbContext.Set(transaction.Hash.BuildDataTransactionKey(), transactionBytes);
+        }
+
+        public Task<SignedBlockHeader> GetSignedBlockHeader(UInt256 blockHash)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<UInt256> GetBlockHashFromHeight(uint height)

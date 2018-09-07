@@ -8,7 +8,7 @@ using NeoSharp.Core.Types;
 
 namespace NeoSharp.Core.Converters
 {
-    class UInt160Converter : TypeConverter, IBinaryCustomSerializable
+    public class UInt160Converter : TypeConverter, IBinaryCustomSerializable
     {
         public static readonly int FixedLength = UInt160.BufferLength;
 

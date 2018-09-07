@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace NeoSharp.Core.Models.Blocks
 {
+    [Serializable]
     public class SignedBlockBase
     {
         #region Private Fields 
@@ -64,6 +65,9 @@ namespace NeoSharp.Core.Models.Blocks
         #endregion
 
         #region Constructor
+        public SignedBlockBase()
+        { }
+
         public SignedBlockBase(
             BlockBase block, 
             SignedWitness signedWitness, 

@@ -7,6 +7,10 @@ namespace NeoSharp.Core.Models.Blocks
     {
         SignedBlock Sign(Block unsignedBlock);
 
+        SignedBlockHeader Sign(BlockHeader unsignedBlockHeader);
+
         SignedBlock Sign(Block unsignedBlock, IReadOnlyList<SignedTransactionBase> signedTransactions);
+
+        SignedBlockHeader Deserialize(byte[] rawBlockHeader);
     }
 }

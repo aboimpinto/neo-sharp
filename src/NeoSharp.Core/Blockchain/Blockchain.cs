@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using NeoSharp.Core.Blockchain.Processors;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
-using NeoSharp.Core.Models.Builders;
+using NeoSharp.Core.Models.Blocks;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
+using Block = NeoSharp.Core.Models.Block;
+using BlockHeader = NeoSharp.Core.Models.BlockHeader;
 
 namespace NeoSharp.Core.Blockchain
 {
@@ -57,6 +59,8 @@ namespace NeoSharp.Core.Blockchain
 
             var blockHeight = await _repository.GetTotalBlockHeight();
             var blockHeaderHeight = await _repository.GetTotalBlockHeaderHeight();
+
+            var currentSignedBlock = await this.GetSignedBlock(blockHeight);
 
             CurrentBlock = await GetBlock(blockHeight);
             LastBlockHeader = await GetBlockHeader(blockHeaderHeight);
@@ -114,6 +118,15 @@ namespace NeoSharp.Core.Blockchain
             var hash = await GetBlockHash(height);
 
             return hash == null ? null : await GetBlock(hash);
+        }
+
+        private async Task<SignedBlock> GetSignedBlock(uint height)
+        {
+            var lastBlockHash = await this.GetBlockHash(height);
+
+            var header = await this._repository.GetSignedBlockHeader(lastBlockHash);
+
+            return null;
         }
 
         /// <inheritdoc />

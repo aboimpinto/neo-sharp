@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NeoSharp.BinarySerialization\NeoSharp.BinarySerialization.csproj" />
     <ProjectReference Include="..\NeoSharp.Core\NeoSharp.Core.csproj" />
   </ItemGroup>
 

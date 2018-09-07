@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
+using NeoSharp.Core.Models.Blocks;
 using NeoSharp.Core.Types;
+using BlockHeader = NeoSharp.Core.Models.BlockHeader;
 using Validator = NeoSharp.Core.Models.Validator;
 
 namespace NeoSharp.Core.Persistence
@@ -65,6 +67,8 @@ namespace NeoSharp.Core.Persistence
         /// <param name="hash">Block id / hash</param>
         /// <returns>Block header with specified id</returns>
         Task<BlockHeader> GetBlockHeader(UInt256 hash);
+
+        Task<SignedBlockHeader> GetSignedBlockHeader(UInt256 blockHash);
 
         /// <summary>
         /// Retrieves a hash by height / index

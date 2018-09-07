@@ -78,7 +78,8 @@ namespace NeoSharp.Core.Models.Builders
                 Crypto.Default, 
                 transactionSignatureManager, 
                 witnessSignatureManager, 
-                BinarySerializer.Default);
+                BinarySerializer.Default,
+                BinaryDeserializer.Default);
             return blockSignatureManager.Sign(genesisBlock, signedTransactions);
         }
         #endregion

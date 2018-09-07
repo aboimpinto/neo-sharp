@@ -19,6 +19,7 @@ namespace NeoSharp.Core.Models.Blocks
         private readonly ITransactionSignatureManager _transactionSignatureManager;
         private readonly IWitnessSignatureManager _witnessSignatureManager;
         private readonly IBinarySerializer _binarySerializer;
+        private readonly IBinaryDeserializer _binaryDeserializer;
         #endregion
 
         #region Constructor 
@@ -26,12 +27,14 @@ namespace NeoSharp.Core.Models.Blocks
             Crypto crypto, 
             ITransactionSignatureManager transactionSignatureManager, 
             IWitnessSignatureManager witnessSignatureManager, 
-            IBinarySerializer binarySerializer)
+            IBinarySerializer binarySerializer,
+            IBinaryDeserializer binaryDeserializer)
         {
             this._crypto = crypto;
             this._transactionSignatureManager = transactionSignatureManager;
             this._witnessSignatureManager = witnessSignatureManager;
             this._binarySerializer = binarySerializer;
+            this._binaryDeserializer = binaryDeserializer;
         }
         #endregion
 
@@ -48,6 +51,13 @@ namespace NeoSharp.Core.Models.Blocks
             return new SignedBlock(unsignedBlock, signedWitness, signedBlockTransactions, this.SignedBlockHashCalculator);
         }
 
+        public SignedBlockHeader Sign(BlockHeader unsignedBlockHeader)
+        {
+            var signedWitness = this._witnessSignatureManager.Sign(unsignedBlockHeader.Witness);
+
+            return new SignedBlockHeader(unsignedBlockHeader, signedWitness, unsignedBlockHeader.TransactionHashes, this.SignedBlockHeaderHashCalculator);
+        }
+
         public SignedBlock Sign(Block unsignedBlock, IReadOnlyList<SignedTransactionBase> signedTransactions)
         {
             var signedWitness = this._witnessSignatureManager.Sign(unsignedBlock.Witness);
@@ -59,7 +69,48 @@ namespace NeoSharp.Core.Models.Blocks
         {
             var signedWitness = this._witnessSignatureManager.Sign(unsighedBlockHeader.Witness);
 
-            return new SignedBlockHeader(unsighedBlockHeader, signedWitness, signedTransactions, this.SignedBlockHeaderHashCalculator);
+            return new SignedBlockHeader(unsighedBlockHeader, signedWitness, signedTransactions.Select(x => x.Hash), this.SignedBlockHeaderHashCalculator);
+        }
+
+        public SignedBlockHeader Deserialize(byte[] rawBlockHeader)
+        {
+            using (var ms = new MemoryStream(rawBlockHeader))
+            {
+                using (var br = new BinaryReader(ms, Encoding.UTF8, true))
+                {
+                    var version = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, br, typeof(uint));
+                    var previousBlockHash = (UInt256)new UInt256Converter().Deserialize(this._binaryDeserializer, br, typeof(UInt256));
+                    new UInt256Converter().Deserialize(this._binaryDeserializer, br, typeof(UInt256));      // this field is saved but it's calculated during the signature.
+                    var timestamp = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, br, typeof(uint));
+                    var index = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, br, typeof(uint));
+                    var consensusData = (ulong)new BinaryUInt64Serializer().Deserialize(this._binaryDeserializer, br, typeof(ulong));
+                    var nextConsensus = (UInt160)new UInt160Converter().Deserialize(this._binaryDeserializer, br, typeof(UInt160));
+                    var type = (HeaderType)new BinaryEnumSerializer(typeof(HeaderType), new BinaryByteSerializer()).Deserialize(this._binaryDeserializer, br, typeof(uint));
+
+                    var witness = new Witnesses.Witness
+                    {
+                        InvocationScript = (byte[])new BinaryByteArraySerializer(65536).Deserialize(this._binaryDeserializer, br, typeof(byte[])),
+                        VerificationScript = (byte[])new BinaryByteArraySerializer(65536).Deserialize(this._binaryDeserializer, br, typeof(byte[]))
+                    };
+
+                    var transtionHashes = new List<UInt256>((UInt256[])new BinaryArraySerializer(typeof(UInt256[]), new UInt256Converter()).Deserialize(this._binaryDeserializer, br, typeof(UInt256[])));
+
+                    var blockHeader = new BlockHeader
+                    {
+                        Version = version,
+                        PreviousBlockHash = previousBlockHash,
+                        Timestamp = timestamp,
+                        Index = index,
+                        ConsensusData = consensusData,
+                        NextConsensus = nextConsensus,
+                        Type = type,
+                        Witness = witness,
+                        TransactionHashes = transtionHashes
+                    };
+
+                    return this.Sign(blockHeader);
+                }
+            }
         }
         #endregion
 
@@ -128,7 +179,7 @@ namespace NeoSharp.Core.Models.Blocks
             return serializeResult;
         }
 
-        private byte[] GenerateBlockHeaderSigningSettings(SignedBlockHeader signedBlockHeader, BinarySerializerSettings serializerSettings = null)
+        private byte[] GenerateBlockHeaderSigningSettings(SignedBlockBase signedBlockHeader, BinarySerializerSettings serializerSettings = null)
         {
             using (var ms = new MemoryStream())
             {
@@ -137,7 +188,7 @@ namespace NeoSharp.Core.Models.Blocks
             }
         }
 
-        private int SerializeSignedBlockHeader(SignedBlockHeader signedBlockHeader, Stream stream, BinarySerializerSettings settings = null)
+        private int SerializeSignedBlockHeader(SignedBlockBase signedBlockHeader, Stream stream, BinarySerializerSettings settings = null)
         {
             var serializeResult = 0;
 
@@ -157,7 +208,7 @@ namespace NeoSharp.Core.Models.Blocks
                 }
             }
 
-            return serializeResult;
+            return serializeResult;     // TODO [AboimPinto]: Need to know why we have the serializeResult that is never used.
         }
         #endregion
     }

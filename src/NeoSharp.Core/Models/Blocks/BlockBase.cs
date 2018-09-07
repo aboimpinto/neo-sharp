@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using NeoSharp.Core.Models.Transactions;
-using NeoSharp.Core.Types;
+﻿using NeoSharp.Core.Types;
 
 namespace NeoSharp.Core.Models.Blocks
 {
@@ -21,7 +19,5 @@ namespace NeoSharp.Core.Models.Blocks
         public HeaderType Type { get; set; }
 
         public Witnesses.Witness Witness { get; set; }
-
-        public IList<TransactionBase> Transactions { get; set; }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
+using NeoSharp.Core.Models.Blocks;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
+using BlockHeader = NeoSharp.Core.Models.BlockHeader;
 
 namespace NeoSharp.Persistence.RocksDB
 {
@@ -16,6 +19,7 @@ namespace NeoSharp.Persistence.RocksDB
         private readonly IRocksDbContext _rocksDbContext;
         private readonly IBinarySerializer _binarySerializer;
         private readonly IBinaryDeserializer _binaryDeserializer;
+        private readonly IBlockSignatureManager _blockSignatureManager;
 
         private readonly byte[] _sysCurrentBlockKey = {(byte) DataEntryPrefix.SysCurrentBlock};
         private readonly byte[] _sysCurrentBlockHeaderKey = {(byte) DataEntryPrefix.SysCurrentHeader};
@@ -26,16 +30,16 @@ namespace NeoSharp.Persistence.RocksDB
 
         #region Constructor
 
-        public RocksDbRepository
-        (
+        public RocksDbRepository(
             IRocksDbContext rocksDbContext,
             IBinarySerializer binarySerializer,
-            IBinaryDeserializer binaryDeserializer
-        )
+            IBinaryDeserializer binaryDeserializer,
+            IBlockSignatureManager blockSignatureManager)
         {
             _rocksDbContext = rocksDbContext ?? throw new ArgumentNullException(nameof(rocksDbContext));
             _binarySerializer = binarySerializer ?? throw new ArgumentNullException(nameof(binarySerializer));
             _binaryDeserializer = binaryDeserializer;
+            _blockSignatureManager = blockSignatureManager;
         }
 
         #endregion
@@ -100,6 +104,13 @@ namespace NeoSharp.Persistence.RocksDB
         {
             var rawHeader = await _rocksDbContext.Get(hash.BuildDataBlockKey());
             return rawHeader == null ? null : _binaryDeserializer.Deserialize<BlockHeader>(rawHeader);
+        }
+
+        public async Task<SignedBlockHeader> GetSignedBlockHeader(UInt256 blockHash)
+        {
+            var rawHeader = await _rocksDbContext.Get(blockHash.BuildDataBlockKey());
+
+            return rawHeader == null ? null : this._blockSignatureManager.Deserialize(rawHeader);
         }
 
         public async Task<Transaction> GetTransaction(UInt256 hash)
