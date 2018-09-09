@@ -1,7 +1,14 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models.Blocks;
+using NeoSharp.Core.Models.Builders;
+using NeoSharp.Core.Models.Transactions;
+using NeoSharp.Core.Models.Witnesses;
 using NeoSharp.TestHelpers;
 
 namespace NeoSharp.Core.Test.Models
@@ -9,6 +16,43 @@ namespace NeoSharp.Core.Test.Models
     [TestClass]
     public class UtBlockSignatureManager : TestBase
     {
+        [TestMethod]
+        public void SignBlockHeader_SignGenesisBlockHeader_RightBlockHash()
+        {
+            BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
+            this.AutoMockContainer.Register(Crypto.Default);
+            this.AutoMockContainer.Register(BinarySerializer.Default);
+            this.AutoMockContainer.Register(BinaryDeserializer.Default);
+            this.AutoMockContainer.Register<IWitnessSignatureManager>(this.AutoMockContainer.Create<WitnessSignatureManager>());
+            this.AutoMockContainer.Register<ITransactionSignatureManager>(this.AutoMockContainer.Create<TransactionSignatureManager>());
+
+            var signedBlock = new BlockBuilder()
+                .BuildSignedGenesisBlock();
+
+            var blockHeader = new BlockHeader
+            {
+                Version = signedBlock.Version,
+                PreviousBlockHash = signedBlock.PreviousBlockHash,
+                Timestamp = signedBlock.Timestamp,
+                Index = signedBlock.Index,
+                ConsensusData = signedBlock.ConsensusData,
+                NextConsensus = signedBlock.NextConsensus,
+                Witness = new Witness
+                {
+                    InvocationScript = signedBlock.Witness.InvocationScript,
+                    VerificationScript = signedBlock.Witness.VerificationScript
+                },
+                TransactionHashes = signedBlock.Transactions.Select(x => x.Hash).ToList()
+            };
+
+            var testee = this.AutoMockContainer.Create<BlockSignatureManager>();
+            var signedBlockHeader = testee.Sign(blockHeader);
+
+            signedBlockHeader.Hash.ToString(true)
+                .Should()
+                .Be("0xd42561e3d30e15be6400b6df2f328e02d2bf6354c41dce433bc57687c82144bf");
+        }
+
         [TestMethod]
         public void DeserializeBlockHeader_GenesisBlockHeaderByteArray_ReturnSignedBlockHeader()
         {
