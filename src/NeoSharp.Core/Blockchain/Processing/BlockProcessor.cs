@@ -87,7 +87,7 @@ namespace NeoSharp.Core.Blockchain.Processing
             }
 
             var blockHeader = await _repository.GetBlockHeader(blockHash);
-            if (blockHeader?.Type == BlockHeader.HeaderType.Extended)
+            if (blockHeader?.Type == HeaderType.Extended)
             {
                 throw new InvalidOperationException($"The block \"{blockHash.ToString(true)}\" exists already on the blockchain.");
             }

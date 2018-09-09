@@ -118,7 +118,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processing
                 }
             };
 
-            var expectedBlockHeader = new BlockHeader(BlockHeader.HeaderType.Extended);
+            var expectedBlockHeader = new BlockHeader(HeaderType.Extended);
 
             var blockPoolMock = this.AutoMockContainer.GetMock<IBlockPool>();
             blockPoolMock
@@ -152,7 +152,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processing
                 }
             };
 
-            var expectedBlockHeader = new BlockHeader(BlockHeader.HeaderType.Header) { Hash = block.Hash };
+            var expectedBlockHeader = new BlockHeader(HeaderType.Header) { Hash = block.Hash };
 
             var blockPoolMock = this.AutoMockContainer.GetMock<IBlockPool>();
             blockPoolMock

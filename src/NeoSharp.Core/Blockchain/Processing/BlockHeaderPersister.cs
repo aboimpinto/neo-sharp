@@ -76,7 +76,7 @@ namespace NeoSharp.Core.Blockchain.Processing
                 }
             }
 
-            return blockHeader.Type == BlockHeader.HeaderType.Extended;
+            return blockHeader.Type == HeaderType.Extended;
         }
     }
 }
