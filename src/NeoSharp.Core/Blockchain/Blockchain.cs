@@ -96,6 +96,10 @@ namespace NeoSharp.Core.Blockchain
 
             var header = await this._repository.GetSignedBlockHeader(lastBlockHash);
 
+            if (header == null || header.Type == HeaderType.Header) return null;
+
+
+
             return null;
         }
 
