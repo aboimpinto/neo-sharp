@@ -6,6 +6,7 @@ using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.Blocks;
+using NeoSharp.Core.Models.Transactions;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
 using BlockHeader = NeoSharp.Core.Models.BlockHeader;
@@ -15,17 +16,16 @@ namespace NeoSharp.Persistence.RocksDB
     public class RocksDbRepository : IRepository, IDisposable
     {
         #region Private Fields
-
         private readonly IRocksDbContext _rocksDbContext;
         private readonly IBinarySerializer _binarySerializer;
         private readonly IBinaryDeserializer _binaryDeserializer;
         private readonly IBlockSignatureManager _blockSignatureManager;
+        private readonly ITransactionSignatureManager _transactionSignatureManager;
 
         private readonly byte[] _sysCurrentBlockKey = {(byte) DataEntryPrefix.SysCurrentBlock};
         private readonly byte[] _sysCurrentBlockHeaderKey = {(byte) DataEntryPrefix.SysCurrentHeader};
         private readonly byte[] _sysVersionKey = {(byte) DataEntryPrefix.SysVersion};
         private readonly byte[] _indexHeightKey = {(byte) DataEntryPrefix.IxIndexHeight};
-
         #endregion
 
         #region Constructor
@@ -34,12 +34,14 @@ namespace NeoSharp.Persistence.RocksDB
             IRocksDbContext rocksDbContext,
             IBinarySerializer binarySerializer,
             IBinaryDeserializer binaryDeserializer,
-            IBlockSignatureManager blockSignatureManager)
+            IBlockSignatureManager blockSignatureManager,
+            ITransactionSignatureManager transactionSignatureManager)
         {
             _rocksDbContext = rocksDbContext ?? throw new ArgumentNullException(nameof(rocksDbContext));
             _binarySerializer = binarySerializer ?? throw new ArgumentNullException(nameof(binarySerializer));
             _binaryDeserializer = binaryDeserializer;
             _blockSignatureManager = blockSignatureManager;
+            _transactionSignatureManager = transactionSignatureManager;
         }
 
         #endregion
@@ -119,6 +121,11 @@ namespace NeoSharp.Persistence.RocksDB
             return rawTransaction == null ? null : _binaryDeserializer.Deserialize<Transaction>(rawTransaction);
         }
 
+        public async Task<SignedTransactionBase> GetSignedTransaction(UInt256 transactionHash)
+        {
+            var rawTransaction = await _rocksDbContext.Get(transactionHash.BuildDataTransactionKey());
+            return rawTransaction == null ? null : this._transactionSignatureManager.Deserialize(rawTransaction);
+        }
         #endregion
 
         #region IRepository State Members

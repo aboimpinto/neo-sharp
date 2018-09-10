@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.Blocks;
+using NeoSharp.Core.Models.Transactions;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
 using NeoSharp.Persistence.RedisDB.Helpers;
@@ -117,6 +118,11 @@ namespace NeoSharp.Persistence.RedisDB
         {
             var transactionRedisValue = await _redisDbContext.Get(hash.BuildDataTransactionKey());
             return _jsonConverter.DeserializeObject<Transaction>(transactionRedisValue);
+        }
+
+        public Task<SignedTransactionBase> GetSignedTransaction(UInt256 transactionHash)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

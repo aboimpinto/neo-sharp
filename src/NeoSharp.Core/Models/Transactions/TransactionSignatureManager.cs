@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models.Witnesses;
@@ -42,6 +45,39 @@ namespace NeoSharp.Core.Models.Transactions
             }
 
             throw new NotSupportedException($"The type {transaction.GetType()} doesn't have a SignatureManger.");
+        }
+
+        public SignedTransactionBase Deserialize(byte[] rawBlockHeader)
+        {
+            var transactionDeselializer = new Dictionary<byte, Func<byte[], TransactionBase>>
+            {
+                { 0, this.MinerDeserializer },
+                { 64, this.RegisterDeserializer }
+            };
+
+
+            using (var ms = new MemoryStream(rawBlockHeader))
+            {
+                using (var binaryReader = new BinaryReader(ms, Encoding.UTF8, true))
+                {
+                    var deserializer = transactionDeselializer[binaryReader.ReadByte()];
+                    deserializer.Invoke(rawBlockHeader);
+                }
+            }
+
+            return null;
+        }
+        #endregion
+
+        #region Private Fields 
+        private TransactionBase MinerDeserializer(byte[] rawMinerTransaction)
+        {
+            return null;
+        }
+
+        private TransactionBase RegisterDeserializer(byte[] rawRegisterTransaction)
+        {
+            return null;
         }
         #endregion
     }

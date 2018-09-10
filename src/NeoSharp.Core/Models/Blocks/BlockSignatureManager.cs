@@ -76,24 +76,24 @@ namespace NeoSharp.Core.Models.Blocks
         {
             using (var ms = new MemoryStream(rawBlockHeader))
             {
-                using (var br = new BinaryReader(ms, Encoding.UTF8, true))
+                using (var binaryReader = new BinaryReader(ms, Encoding.UTF8, true))
                 {
-                    var version = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, br, typeof(uint));
-                    var previousBlockHash = (UInt256)new UInt256Converter().Deserialize(this._binaryDeserializer, br, typeof(UInt256));
-                    new UInt256Converter().Deserialize(this._binaryDeserializer, br, typeof(UInt256));      // this field is saved but it's calculated during the signature.
-                    var timestamp = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, br, typeof(uint));
-                    var index = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, br, typeof(uint));
-                    var consensusData = (ulong)new BinaryUInt64Serializer().Deserialize(this._binaryDeserializer, br, typeof(ulong));
-                    var nextConsensus = (UInt160)new UInt160Converter().Deserialize(this._binaryDeserializer, br, typeof(UInt160));
-                    var type = (HeaderType)new BinaryEnumSerializer(typeof(HeaderType), new BinaryByteSerializer()).Deserialize(this._binaryDeserializer, br, typeof(uint));
+                    var version = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, binaryReader, typeof(uint));
+                    var previousBlockHash = (UInt256)new UInt256Converter().Deserialize(this._binaryDeserializer, binaryReader, typeof(UInt256));
+                    new UInt256Converter().Deserialize(this._binaryDeserializer, binaryReader, typeof(UInt256));      // this field is saved but it's calculated during the signature.
+                    var timestamp = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, binaryReader, typeof(uint));
+                    var index = (uint)new BinaryUInt32Serializer().Deserialize(this._binaryDeserializer, binaryReader, typeof(uint));
+                    var consensusData = (ulong)new BinaryUInt64Serializer().Deserialize(this._binaryDeserializer, binaryReader, typeof(ulong));
+                    var nextConsensus = (UInt160)new UInt160Converter().Deserialize(this._binaryDeserializer, binaryReader, typeof(UInt160));
+                    var type = (HeaderType)new BinaryEnumSerializer(typeof(HeaderType), new BinaryByteSerializer()).Deserialize(this._binaryDeserializer, binaryReader, typeof(uint));
 
                     var witness = new Witnesses.Witness
                     {
-                        InvocationScript = (byte[])new BinaryByteArraySerializer(65536).Deserialize(this._binaryDeserializer, br, typeof(byte[])),
-                        VerificationScript = (byte[])new BinaryByteArraySerializer(65536).Deserialize(this._binaryDeserializer, br, typeof(byte[]))
+                        InvocationScript = (byte[])new BinaryByteArraySerializer(65536).Deserialize(this._binaryDeserializer, binaryReader, typeof(byte[])),
+                        VerificationScript = (byte[])new BinaryByteArraySerializer(65536).Deserialize(this._binaryDeserializer, binaryReader, typeof(byte[]))
                     };
 
-                    var transtionHashes = new List<UInt256>((UInt256[])new BinaryArraySerializer(typeof(UInt256[]), new UInt256Converter()).Deserialize(this._binaryDeserializer, br, typeof(UInt256[])));
+                    var transtionHashes = new List<UInt256>((UInt256[])new BinaryArraySerializer(typeof(UInt256[]), new UInt256Converter()).Deserialize(this._binaryDeserializer, binaryReader, typeof(UInt256[])));
 
                     var blockHeader = new BlockHeader
                     {

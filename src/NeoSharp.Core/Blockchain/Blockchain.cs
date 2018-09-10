@@ -7,6 +7,7 @@ using NeoSharp.Core.Blockchain.Processing;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.Blocks;
+using NeoSharp.Core.Models.Transactions;
 using NeoSharp.Core.Persistence;
 using NeoSharp.Core.Types;
 using Block = NeoSharp.Core.Models.Block;
@@ -94,11 +95,16 @@ namespace NeoSharp.Core.Blockchain
         {
             var lastBlockHash = await this.GetBlockHash(height);
 
-            var header = await this._repository.GetSignedBlockHeader(lastBlockHash);
+            var signedBlockHeader = await this._repository.GetSignedBlockHeader(lastBlockHash);
 
-            if (header == null || header.Type == HeaderType.Header) return null;
+            if (signedBlockHeader == null || signedBlockHeader.Type == HeaderType.Header) return null;
 
-
+            var signedTransactions = new List<SignedTransactionBase>();
+            foreach (var transactionHash in signedBlockHeader.TransactionHashes)
+            {
+                signedTransactions.Add(await this._repository.GetSignedTransaction(transactionHash));
+            }
+            
 
             return null;
         }

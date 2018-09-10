@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.Blocks;
+using NeoSharp.Core.Models.Transactions;
 using NeoSharp.Core.Types;
 using BlockHeader = NeoSharp.Core.Models.BlockHeader;
 using Validator = NeoSharp.Core.Models.Validator;
@@ -93,6 +94,8 @@ namespace NeoSharp.Core.Persistence
         /// <param name="hash">Identifier / hash of the transaction</param>
         /// <returns>Transaction with the specified id / hash</returns>
         Task<Transaction> GetTransaction(UInt256 hash);
+
+        Task<SignedTransactionBase> GetSignedTransaction(UInt256 transactionHash);
 
         #endregion
 
