@@ -48,6 +48,14 @@ namespace NeoSharp.BinarySerialization
         /// <returns>Return byte array</returns>
         public T Deserialize<T>(byte[] data, BinarySerializerSettings settings = null)
         {
+            //var sb = new StringBuilder("new byte[] { ");
+            //foreach (var b in data)
+            //{
+            //    sb.Append(b + ", ");
+            //}
+            //sb.Append("}");
+            //Console.WriteLine(sb.ToString());
+
             using (var ms = new MemoryStream(data))
             {
                 return Deserialize<T>(ms, settings);

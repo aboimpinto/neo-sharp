@@ -14,14 +14,20 @@ namespace NeoSharp.Core.Models.Transactions
         private readonly Crypto _crypto;
         private readonly IWitnessSignatureManager _witnessSignatureManager;
         private readonly IBinarySerializer _binarySerializer;
+        private readonly IBinaryDeserializer _binaryDeserializer;
         #endregion
 
         #region Constructor 
-        public TransactionSignatureManager(Crypto crypto, IWitnessSignatureManager witnessSignatureManager, IBinarySerializer binarySerializer)
+        public TransactionSignatureManager(
+            Crypto crypto, 
+            IWitnessSignatureManager witnessSignatureManager, 
+            IBinarySerializer binarySerializer,
+            IBinaryDeserializer binaryDeserializer)
         {
-            _crypto = crypto;
-            _witnessSignatureManager = witnessSignatureManager;
-            _binarySerializer = binarySerializer;
+            this._crypto = crypto;
+            this._witnessSignatureManager = witnessSignatureManager;
+            this._binarySerializer = binarySerializer;
+            this._binaryDeserializer = binaryDeserializer;
         }
         #endregion
 
@@ -30,17 +36,17 @@ namespace NeoSharp.Core.Models.Transactions
         {
             if (transaction.GetType() == typeof(RegisterTransaction))
             {
-                return new RegisterTransactionSignatureManager(this._crypto, this._witnessSignatureManager, this._binarySerializer)
+                return new RegisterTransactionSignatureManager(this._crypto, this._witnessSignatureManager, this._binarySerializer, this._binaryDeserializer)
                     .Sign((RegisterTransaction)transaction);
             }
             else if (transaction.GetType() == typeof(MinerTransaction))
             {
-                return new MinerTransactionSignatureManager(this._crypto, this._witnessSignatureManager, this._binarySerializer)
+                return new MinerTransactionSignatureManager(this._crypto, this._witnessSignatureManager, this._binarySerializer, this._binaryDeserializer)
                     .Sign((MinerTransaction)transaction);
             }
             else if (transaction.GetType() == typeof(IssueTransaction))
             {
-                return new IssueTransactionSignatureManager(this._crypto, this._witnessSignatureManager, this._binarySerializer)
+                return new IssueTransactionSignatureManager(this._crypto, this._witnessSignatureManager, this._binarySerializer, this._binaryDeserializer)
                     .Sign((IssueTransaction) transaction);
             }
 
@@ -49,7 +55,7 @@ namespace NeoSharp.Core.Models.Transactions
 
         public SignedTransactionBase Deserialize(byte[] rawBlockHeader)
         {
-            var transactionDeselializer = new Dictionary<byte, Func<byte[], TransactionBase>>
+            var transactionDeselializer = new Dictionary<byte, Func<byte[], BinaryReader, TransactionBase>>
             {
                 { 0, this.MinerDeserializer },
                 { 64, this.RegisterDeserializer }
@@ -61,7 +67,7 @@ namespace NeoSharp.Core.Models.Transactions
                 using (var binaryReader = new BinaryReader(ms, Encoding.UTF8, true))
                 {
                     var deserializer = transactionDeselializer[binaryReader.ReadByte()];
-                    deserializer.Invoke(rawBlockHeader);
+                    deserializer.Invoke(rawBlockHeader, binaryReader);
                 }
             }
 
@@ -70,12 +76,16 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Private Fields 
-        private TransactionBase MinerDeserializer(byte[] rawMinerTransaction)
+        private TransactionBase MinerDeserializer(byte[] rawMinerTransaction, BinaryReader binaryReader)
         {
-            return null;
+            return new MinerTransactionSignatureManager(
+                this._crypto, 
+                this._witnessSignatureManager,
+                this._binarySerializer, 
+                this._binaryDeserializer).Deserializer(rawMinerTransaction, binaryReader, null);
         }
 
-        private TransactionBase RegisterDeserializer(byte[] rawRegisterTransaction)
+        private TransactionBase RegisterDeserializer(byte[] rawRegisterTransaction, BinaryReader binaryReader)
         {
             return null;
         }

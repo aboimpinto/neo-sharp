@@ -13,8 +13,8 @@ namespace NeoSharp.Core.Models.Transactions
         #endregion
 
         #region Constructor 
-        public RegisterTransactionSignatureManager(Crypto crypto, IWitnessSignatureManager witnessSignatureManager, IBinarySerializer binarySerializer)
-            : base(crypto, witnessSignatureManager, binarySerializer)
+        public RegisterTransactionSignatureManager(Crypto crypto, IWitnessSignatureManager witnessSignatureManager, IBinarySerializer binarySerializer, IBinaryDeserializer binaryDeserializer)
+            : base(crypto, witnessSignatureManager, binarySerializer, binaryDeserializer)
         {
             this._binarySerializer = binarySerializer;
         }

@@ -64,7 +64,7 @@ namespace NeoSharp.Core.Blockchain
             var blockHeight = await _repository.GetTotalBlockHeight();
             var blockHeaderHeight = await _repository.GetTotalBlockHeaderHeight();
 
-            var currentSignedBlock = await this.GetSignedBlock(blockHeight);
+            //var currentSignedBlock = await this.GetSignedBlock(blockHeight);
 
             CurrentBlock = await GetBlock(blockHeight);
             LastBlockHeader = await GetBlockHeader(blockHeaderHeight);

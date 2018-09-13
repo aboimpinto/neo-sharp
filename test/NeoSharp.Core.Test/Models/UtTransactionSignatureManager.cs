@@ -35,8 +35,9 @@ namespace NeoSharp.Core.Test.Models
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
             var binarySerializer = this.AutoMockContainer.Create<BinarySerializer>();
+            var binaryDeserializer = this.AutoMockContainer.Create<BinaryDeserializer>();
 
-            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
+            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer, binaryDeserializer);
             var signedRegisterTransaction = testee.Sign(unsignedRegisterTransaction);
 
             signedRegisterTransaction
@@ -58,8 +59,9 @@ namespace NeoSharp.Core.Test.Models
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
             var binarySerializer = this.AutoMockContainer.Create<BinarySerializer>();
+            var binaryDeserializer = this.AutoMockContainer.Create<BinaryDeserializer>();
 
-            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
+            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer, binaryDeserializer);
             var signedRegisterTransaction = testee.Sign(unsignedRegisterTransaction);
 
             signedRegisterTransaction
@@ -81,8 +83,9 @@ namespace NeoSharp.Core.Test.Models
             var crypto = Crypto.Default;
             var witnessSignatureManager = this.AutoMockContainer.Create<WitnessSignatureManager>();
             var binarySerializer = this.AutoMockContainer.Create<BinarySerializer>();
+            var binaryDeserializer = this.AutoMockContainer.Create<BinaryDeserializer>();
 
-            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
+            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer, binaryDeserializer);
             var signedMinerTransaction = testee.Sign(unsignedMinerTransaction);
 
             signedMinerTransaction
@@ -94,7 +97,7 @@ namespace NeoSharp.Core.Test.Models
         }
 
         [TestMethod]
-        public void SignGenesisIssueTransaction_SignedTypeReturnedWithTheRightHash()
+        public void Sign_GenesisIssueTransaction_SignedTypeReturnedWithTheRightHash()
         {
             BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
 
@@ -104,8 +107,9 @@ namespace NeoSharp.Core.Test.Models
             var crypto = Crypto.Default;
             var witnessSignatureManager = new WitnessSignatureManager(crypto);
             var binarySerializer = this.AutoMockContainer.Create<BinarySerializer>();
+            var binaryDeserializer = this.AutoMockContainer.Create<BinaryDeserializer>();
 
-            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer);
+            var testee = new TransactionSignatureManager(crypto, witnessSignatureManager, binarySerializer, binaryDeserializer);
             var signedRegisterTransaction = testee.Sign(genesisGoverningTokenRegisterTransaction);
 
             var issueTransaction = new TransactionBuilder()
@@ -119,6 +123,22 @@ namespace NeoSharp.Core.Test.Models
             signedIssuedTransaction.Hash.ToString()
                 .Should()
                 .Be("0x3631f66024ca6f5b033d7e0809eb993443374830025af904fb51b0334f127cda");
+        }
+
+        [TestMethod]
+        public void Deserialize_MinerTransaction_DeserializationCorrect()
+        {
+            BinarySerializer.RegisterTypes(typeof(RegisterTransaction).Assembly);
+            this.AutoMockContainer.Register(BinaryDeserializer.Default);
+
+            var rawTransaction = new byte[] {0, 0, 29, 172, 43, 124, 0, 0, 0, 0,};
+
+            var testee = this.AutoMockContainer.Create<TransactionSignatureManager>();
+            var unsignedTransaction = testee.Deserialize(rawTransaction);
+
+            unsignedTransaction
+                .Should()
+                .BeOfType<MinerTransaction>();
         }
     }
 }

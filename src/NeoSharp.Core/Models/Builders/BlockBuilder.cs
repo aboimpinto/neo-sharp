@@ -61,10 +61,15 @@ namespace NeoSharp.Core.Models.Builders
             };
 
             var witnessSignatureManager = new WitnessSignatureManager(Crypto.Default);
-            var transactionSignatureManager = new TransactionSignatureManager(Crypto.Default, witnessSignatureManager, BinarySerializer.Default);
+            var transactionSignatureManager = new TransactionSignatureManager(
+                Crypto.Default, 
+                witnessSignatureManager, 
+                BinarySerializer.Default, 
+                BinaryDeserializer.Default);
 
             var signedGoverningTokenRegisterTransaction = transactionSignatureManager.Sign(governingToken);
-            var genesisIssueTransaction = transactionBuilder.BuildIssueTransaction((SignedRegisterTransaction)signedGoverningTokenRegisterTransaction);
+            var genesisIssueTransaction = transactionBuilder
+                .BuildIssueTransaction((SignedRegisterTransaction)signedGoverningTokenRegisterTransaction);
 
             var signedTransactions = new List<SignedTransactionBase>
             {

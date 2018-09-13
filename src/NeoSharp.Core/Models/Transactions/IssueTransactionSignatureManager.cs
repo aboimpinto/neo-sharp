@@ -7,8 +7,8 @@ namespace NeoSharp.Core.Models.Transactions
     public class IssueTransactionSignatureManager : TransactionSignatureManagerBase, IIssueTransactionSignatureManager
     {
         #region Constructor 
-        public IssueTransactionSignatureManager(Crypto crypto, IWitnessSignatureManager witnessSignatureManager, IBinarySerializer binarySerializer) 
-            : base(crypto, witnessSignatureManager, binarySerializer)
+        public IssueTransactionSignatureManager(Crypto crypto, IWitnessSignatureManager witnessSignatureManager, IBinarySerializer binarySerializer, IBinaryDeserializer binaryDeserializer) 
+            : base(crypto, witnessSignatureManager, binarySerializer, binaryDeserializer)
         {
         }
         #endregion

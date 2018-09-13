@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,14 +17,21 @@ namespace NeoSharp.Core.Models.Transactions
         private readonly Crypto _crypto;
         private readonly IWitnessSignatureManager _witnessSignatureManager;
         private readonly IBinarySerializer _binarySerializer;
+        private readonly IBinaryDeserializer _binaryDeserializer;
+
         #endregion
 
         #region Constructor 
-        protected TransactionSignatureManagerBase(Crypto crypto, IWitnessSignatureManager witnessSignatureManager, IBinarySerializer binarySerializer)
+        protected TransactionSignatureManagerBase(
+            Crypto crypto, 
+            IWitnessSignatureManager witnessSignatureManager, 
+            IBinarySerializer binarySerializer,
+            IBinaryDeserializer binaryDeserializer)
         {
             this._crypto = crypto;
             this._witnessSignatureManager = witnessSignatureManager;
             this._binarySerializer = binarySerializer;
+            this._binaryDeserializer = binaryDeserializer;
         }
         #endregion
 
@@ -46,9 +54,37 @@ namespace NeoSharp.Core.Models.Transactions
             return (TSigned)Activator.CreateInstance(typeof(TSigned), unsignedTransaction, signedWitnesses, funcDelegate);
         }
 
+        protected TUnsigned Deserialize<TUnsigned>(byte[] rawTransaction, BinaryReader binaryReader, BinarySerializerSettings settings)
+            where TUnsigned : TransactionBase
+        {
+            var deserializedTransaction = Activator.CreateInstance<TUnsigned>();
+
+            deserializedTransaction.Version = binaryReader.ReadByte();
+
+            this.DeserializeExclusiveData(binaryReader, deserializedTransaction);
+
+            deserializedTransaction.Attributes = this._binaryDeserializer.Deserialize<TransactionAttribute[]>(binaryReader, settings);
+            deserializedTransaction.Inputs = this._binaryDeserializer.Deserialize<CoinReference[]>(binaryReader, settings);
+            deserializedTransaction.Outputs = this._binaryDeserializer.Deserialize<TransactionOutput[]>(binaryReader, settings);
+
+            if (settings?.Filter?.Invoke(nameof(Witnesses.Witness)) != false)
+            {
+                //deserializedTransaction.Witness = this._binaryDeserializer.Deserialize<Witnesses.Witness[]>(binaryReader, settings);
+
+                deserializedTransaction.Witness = new List<Witnesses.Witness>();
+            }
+
+            return deserializedTransaction;
+        }
+
         public virtual int SerializeExecusiveData(SignedTransactionBase transactionBase, BinaryWriter binaryWriter, BinarySerializerSettings settings = null)
         {
             return 0;
+        }
+
+        public virtual void DeserializeExclusiveData(BinaryReader binaryReader, TransactionBase transaction)
+        {
+
         }
         #endregion
 
