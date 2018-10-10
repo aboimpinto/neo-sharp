@@ -5,13 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
-=======
     <None Include="..\..\ca.ruleset" Link="ca.ruleset" />
   </ItemGroup>
 
   <ItemGroup>
->>>>>>> 983c6475a4e99c18b14317ab7df585f44471dcf8
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -29,10 +26,6 @@
   </ItemGroup>
 
 	<PropertyGroup>
-<<<<<<< HEAD
-		<CodeAnalysisRuleSet>..\..\ca.ruleset</CodeAnalysisRuleSet>
-=======
 		<CodeAnalysisRuleSet>ca.ruleset</CodeAnalysisRuleSet>
->>>>>>> 983c6475a4e99c18b14317ab7df585f44471dcf8
 	</PropertyGroup>
 </Project>
