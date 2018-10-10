@@ -43,6 +43,6 @@
     <None Remove="SmartContract\ContractHelper.cs~HEAD" />
   </ItemGroup>
 	<PropertyGroup>
-		<CodeAnalysisRuleSet>..\..\ca.ruleset</CodeAnalysisRuleSet>
+		<CodeAnalysisRuleSet>ca.ruleset</CodeAnalysisRuleSet>
 	</PropertyGroup>
 </Project>
