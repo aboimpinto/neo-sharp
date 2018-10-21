@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -57,6 +58,8 @@ namespace NeoSharp.Core.Network.Tcp
             set => _isReady = value;
         }
 
+        public DateTime ConnectionDate { get; }
+
         #endregion
 
         #region Variables
@@ -89,6 +92,7 @@ namespace NeoSharp.Core.Network.Tcp
 
             _stream = new NetworkStream(socket, true);
             _protocol = protocolSelector.DefaultProtocol;
+            ConnectionDate = DateTime.UtcNow;
 
             // Extract address
 
@@ -124,9 +128,9 @@ namespace NeoSharp.Core.Network.Tcp
         /// </summary>
         public void Disconnect()
         {
-            OnDisconnect?.Invoke(this, null);
             Dispose();
             _logger.LogInformation($"The peer {EndPoint.Host}:{EndPoint.Port} was disconnected");
+            OnDisconnect?.Invoke(this, null);
         }
 
         public event EventHandler OnDisconnect;
@@ -231,7 +235,6 @@ namespace NeoSharp.Core.Network.Tcp
                 catch (Exception err)
                 {
                     _logger.LogError(err, "Error while receive");
-
                     Disconnect();
                 }
             }
