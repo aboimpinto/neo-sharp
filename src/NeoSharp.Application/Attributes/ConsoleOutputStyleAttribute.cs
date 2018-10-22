@@ -4,10 +4,7 @@ namespace NeoSharp.Application.Attributes
 {
     internal class ConsoleOutputStyleAttribute : Attribute
     {
-        /// <summary>
-        /// Cache the last one
-        /// </summary>
-        static ConsoleOutputStyleAttribute _lastStyle = null;
+        private ConsoleOutputStyleAttribute _lastStyle = null;
 
         /// <summary>
         /// Background color
@@ -24,15 +21,21 @@ namespace NeoSharp.Application.Attributes
         public void Apply()
         {
             if (_lastStyle == this)
+            {
                 return;
+            }
 
             _lastStyle = this;
 
             if (Console.ForegroundColor != Foreground)
+            {
                 Console.ForegroundColor = Foreground;
+            }
 
             if (Console.BackgroundColor != Background)
+            {
                 Console.BackgroundColor = Background;
+            }
         }
     }
 }

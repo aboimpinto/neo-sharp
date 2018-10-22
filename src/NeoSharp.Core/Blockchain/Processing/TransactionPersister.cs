@@ -84,7 +84,9 @@ namespace NeoSharp.Core.Blockchain.Processing
                     await _enrollmentTransactionPersister.Persist(enrollment);
                     break;
                 default:
-                    throw new ArgumentException("Unknown Transaction Type");
+                    // [AboiPinto]: cannot throw because will rollback the transaction of persisting block
+                    //throw new ArgumentException("Unknown Transaction Type");
+                    break;
             }
 
             await _repository.AddTransaction(transaction);
